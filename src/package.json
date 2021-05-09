@@ -1,0 +1,15 @@
+{
+  "name": "kaholo-plugin-github",
+  "version": "1.0.0",
+  "description": "Kaholo Plugin for Github",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kaholo Group(Amit Alon)",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {}
+}

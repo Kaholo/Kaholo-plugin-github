@@ -1,0 +1,88 @@
+{
+  "name": "Github",
+  "type": "executer",
+  "execProgram": "node",
+  "main": "app.js",
+  "exposeRoute": true,
+  "imgUrl": "logo.png",
+  "version": "1.0.0",
+  "description": "Integration with Github API",
+  "settings": [
+    {
+      "name": "user",
+      "viewName": "Username",
+      "type": "string"
+    },
+    {
+      "name": "token",
+      "viewName": "Token",
+      "type": "vault"
+    }
+  ],
+  "methods": [
+    {
+      "name": "sendStatus",
+      "viewName": "Create Commit Status",
+      "params": [
+        {
+          "name": "user",
+          "viewName": "Username",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "viewName": "Token",
+          "type": "vault"
+        },
+        {
+          "name": "repo",
+          "viewName": "Full Repository Name",
+          "type": "string"
+        },
+        {
+          "name": "sha",
+          "viewName": "Commit SHA",
+          "type": "string"
+        },
+        {
+          "name": "state",
+          "viewName": "State",
+          "type": "options",
+          "options": [
+            {
+              "id": "error",
+              "name": "error"
+            },
+            {
+              "id": "failure",
+              "name": "failure"
+            },
+            {
+              "id": "pending",
+              "name": "pending"
+            },
+            {
+              "id": "success",
+              "name": "success"
+            }
+          ]
+        },
+        {
+          "name": "linkedUrl",
+          "viewName": "Linked Target URL",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "viewName": "Description",
+          "type": "text"
+        },
+        {
+          "name": "context",
+          "viewName": "Context",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
