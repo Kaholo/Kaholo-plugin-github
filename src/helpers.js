@@ -10,7 +10,11 @@ async function sendToGithub(url, httpMethod, body, user, token) {
                     'Authorization': 'token '+token,   
                     'Content-Type': 'application/json', },
     });
-    return res.json();
+    const jsonRes = await res.json();
+    if (jsonRes.errors && jsonRes.errors.length > 0){
+        throw jsonRes;
+    }
+    return jsonRes;
 }
 
 function btoa(str){

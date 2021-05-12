@@ -20,7 +20,11 @@ Repository Name should be in the format of {owner}/{repo}`);
     if (description) body.description = description;
     if (context) body.context = context;
     
-    return sendToGithub(reqUrl, "POST", body, user, token);
+    const res = await sendToGithub(reqUrl, "POST", body, user, token);
+    if (res.message && res.message.includes("No commit found for SHA")){
+        throw res;
+    }
+    return res;
 }
 
 module.exports = {
