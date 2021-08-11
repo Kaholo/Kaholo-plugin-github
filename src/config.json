@@ -5,17 +5,12 @@
   "main": "app.js",
   "exposeRoute": true,
   "imgUrl": "logo.png",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Integration with Github API",
   "settings": [
     {
-      "name": "user",
-      "viewName": "Username",
-      "type": "string"
-    },
-    {
       "name": "token",
-      "viewName": "Token",
+      "viewName": "Authentication Token",
       "type": "vault"
     }
   ],
@@ -25,13 +20,8 @@
       "viewName": "Create Commit Status",
       "params": [
         {
-          "name": "user",
-          "viewName": "Username",
-          "type": "string"
-        },
-        {
           "name": "token",
-          "viewName": "Token",
+          "viewName": "Authentication Token",
           "type": "vault"
         },
         {
@@ -80,6 +70,47 @@
         {
           "name": "context",
           "viewName": "Context",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "createRepo",
+      "viewName": "Create New Repository",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "name",
+          "viewName": "Repository Name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "viewName": "Description",
+          "type": "text"
+        },
+        {
+          "name": "org",
+          "viewName": "Organization",
+          "type": "string"
+        },
+        {
+          "name": "private",
+          "viewName": "Private",
+          "type": "boolean"
+        },
+        {
+          "name": "autoInit",
+          "viewName": "Auto Init",
+          "type": "boolean"
+        },
+        {
+          "name": "gitignoreTemplate",
+          "viewName": "GitIgnore Template",
           "type": "string"
         }
       ]

@@ -2,12 +2,12 @@ const fetch = require('node-fetch');
 
 const githubApiUrl = "https://api.github.com";
 
-async function sendToGithub(url, httpMethod, body, user, token) {
+async function sendToGithub(url, httpMethod, body, token) {
     const res = await fetch(githubApiUrl + url, {
         method: httpMethod,
-        body: JSON.stringify(body),
+        body: body ?  JSON.stringify(body) : undefined,
         headers: {  'Accept': 'application/vnd.github.v3+json',
-                    'Authorization': 'token '+token,   
+                    'Authorization': 'token '+ token,   
                     'Content-Type': 'application/json', },
     });
     const jsonRes = await res.json();
@@ -15,10 +15,6 @@ async function sendToGithub(url, httpMethod, body, user, token) {
         throw jsonRes;
     }
     return jsonRes;
-}
-
-function btoa(str){
-    Buffer.from(str).toString('base64');
 }
     
 module.exports = {
