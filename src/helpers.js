@@ -1,26 +1,96 @@
 const fetch = require('node-fetch');
+const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
 
-async function sendToGithub(url, httpMethod, body, user, token) {
-    const res = await fetch(githubApiUrl + url, {
-        method: httpMethod,
-        body: JSON.stringify(body),
-        headers: {  'Accept': 'application/vnd.github.v3+json',
-                    'Authorization': 'token '+token,   
-                    'Content-Type': 'application/json', },
-    });
-    const jsonRes = await res.json();
-    if (jsonRes.errors && jsonRes.errors.length > 0){
-        throw jsonRes;
+async function sendToGithub(url, httpMethod, token, body) {
+    if (!token) {
+        throw "Must provide Authentication Token!";
     }
+    const accept = `application/vnd.github.${url.endsWith("generate") ? "baptiste-preview" : "v3"}+json`;
+    const reqParams = {
+        method: httpMethod,
+        headers: {  
+            'Accept': accept,
+            'Authorization': "token " + token
+        }
+    }
+    if (body) {
+        reqParams.body = JSON.stringify(body);
+        reqParams.headers['Content-Type'] = 'application/json';
+    }
+    const res = await fetch(githubApiUrl + url, reqParams);
+    const jsonRes = await res.json();
+    if (!res.ok || jsonRes.message === "Not Found") { throw jsonRes };
     return jsonRes;
 }
 
-function btoa(str){
-    Buffer.from(str).toString('base64');
+function removeEmptyFields(obj) {
+    Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+    return obj;
+}
+
+async function listGithubRequest(params, settings, path, searchParams){
+    searchParams = removeEmptyFields({
+        ...searchParams, 
+        page: parsers.number(params.page), 
+        per_page: parsers.number(params.per_page)
+    });
+    if (Object.keys(searchParams).length > 0) {
+        path += "?" + new URLSearchParams(searchParams);
+    }
+    return sendToGithub(path, "GET", params.token || settings.token)
+}
+
+async function listOrgs(params, settings) {
+    return listGithubRequest(params, settings, "/user/orgs");
 }
     
+async function getAuthenticatedUser(params, settings) {
+    return sendToGithub("/user", "GET", params.token || settings.token);
+}
+
+async function listRepos(params, settings) {
+    let owner = parsers.autocomplete(params.owner);
+    if (!owner || owner === "user") {
+        return listGithubRequest(params, settings, "/user/repos");
+    }
+    return listGithubRequest(params, settings, `/orgs/${owner}/repos`);
+}
+
+async function listBranches(params, settings) {
+    const repo = parsers.autocomplete(params.repo);
+    if (!repo) throw "Must provide a repository";
+    if (!repo.includes("/")){
+        throw(`Bad repository name format.
+Repository Name should be in the format of {owner}/{repo}`);
+    }
+    return listGithubRequest(params, settings, `/repos/${repo}/branches`);
+}
+
+async function listCommits(params, settings) {
+    const repo = parsers.autocomplete(params.repo);
+    if (!repo) throw "Must provide a repository";
+    if (!repo.includes("/")){
+        throw(`Bad repository name format.
+Repository Name should be in the format of {owner}/{repo}`);
+    }
+    const branch = parsers.autocomplete(params.branch);
+    return listGithubRequest(params, settings, `/repos/${repo}/commits`, {sha: branch});
+}
+
+function stripAction(func){
+    return async (action, settings) => {
+        return func(action.params, settings);
+    };
+}
+
 module.exports = {
-    sendToGithub
+    sendToGithub,
+    listOrgs,
+    getAuthenticatedUser,
+    listRepos,
+    listBranches,
+    listCommits,
+    stripAction
 };

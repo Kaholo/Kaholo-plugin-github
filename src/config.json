@@ -5,17 +5,12 @@
   "main": "app.js",
   "exposeRoute": true,
   "imgUrl": "logo.png",
-  "version": "1.0.2",
+  "version": "1.2.0",
   "description": "Integration with Github API",
   "settings": [
     {
-      "name": "user",
-      "viewName": "Username",
-      "type": "string"
-    },
-    {
       "name": "token",
-      "viewName": "Token",
+      "viewName": "Authentication Token",
       "type": "vault"
     }
   ],
@@ -25,24 +20,37 @@
       "viewName": "Create Commit Status",
       "params": [
         {
-          "name": "user",
-          "viewName": "Username",
-          "type": "string"
-        },
-        {
           "name": "token",
-          "viewName": "Token",
+          "viewName": "Authentication Token",
           "type": "vault"
         },
         {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
           "name": "repo",
-          "viewName": "Full Repository Name",
-          "type": "string"
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listReposAuto"
+        },
+        {
+          "name": "branch",
+          "viewName": "Branch",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listBranchesAuto"
         },
         {
           "name": "sha",
-          "viewName": "Commit SHA",
-          "type": "string"
+          "viewName": "Commit",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listCommitsAuto"
         },
         {
           "name": "state",
@@ -51,19 +59,19 @@
           "options": [
             {
               "id": "error",
-              "name": "error"
+              "name": "Error"
             },
             {
               "id": "failure",
-              "name": "failure"
+              "name": "Failure"
             },
             {
               "id": "pending",
-              "name": "pending"
+              "name": "Pending"
             },
             {
               "id": "success",
-              "name": "success"
+              "name": "Success"
             }
           ]
         },
@@ -81,6 +89,289 @@
           "name": "context",
           "viewName": "Context",
           "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "createRepo",
+      "viewName": "Create New Repository",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "name",
+          "viewName": "Repository Name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "viewName": "Description",
+          "type": "text"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
+          "name": "private",
+          "viewName": "Private",
+          "type": "boolean"
+        },
+        {
+          "name": "autoInit",
+          "viewName": "Auto Init",
+          "type": "boolean"
+        },
+        {
+          "name": "gitignoreTemplate",
+          "viewName": "GitIgnore Template",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "createRepoFromTemplate",
+      "viewName": "Create Repository From Template",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "templateRepo",
+          "viewName": "Template Repository Full Name",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "viewName": "New Repository Name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "viewName": "Description",
+          "type": "text"
+        },
+        {
+          "name": "owner",
+          "viewName": "New Repository Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
+          "name": "private",
+          "viewName": "Private",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "createRepoWebhook",
+      "viewName": "Create Repository Webhook",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listReposAuto"
+        },
+        {
+          "name": "events",
+          "viewName": "Subcribed Events",
+          "type": "text"
+        },
+        {
+          "name": "url",
+          "viewName": "Webhook URL",
+          "type": "string"
+        },
+        {
+          "name": "contentType",
+          "viewName": "Webhook Content Type",
+          "type": "options",
+          "options": [
+            {
+              "id": "json",
+              "name": "Json"
+            },
+            {
+              "id": "form",
+              "name": "Form"
+            }
+          ]
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret",
+          "type": "vault"
+        },
+        {
+          "name": "insecureSsl",
+          "viewName": "Don't Verify SSL",
+          "type": "boolean"
+        },
+        {
+          "name": "notActive",
+          "viewName": "Not Active",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "listOrgs",
+      "viewName": "List Conneceted Organizations",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "perPage",
+          "viewName": "Results Per Page",
+          "type": "string"
+        },
+        {
+          "name": "page",
+          "viewName": "Page Index",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "listRepos",
+      "viewName": "List Available Repositories",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
+          "name": "perPage",
+          "viewName": "Results Per Page",
+          "type": "string"
+        },
+        {
+          "name": "page",
+          "viewName": "Page Index",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "listBranches",
+      "viewName": "List Branches",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listReposAuto"
+        },
+        {
+          "name": "perPage",
+          "viewName": "Results Per Page",
+          "type": "string"
+        },
+        {
+          "name": "page",
+          "viewName": "Page Index",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "listCommits",
+      "viewName": "List Commits",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOwnersAuto"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listReposAuto"
+        },
+        {
+          "name": "branch",
+          "viewName": "Branch",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listBranchesAuto"
+        },
+        {
+          "name": "perPage",
+          "viewName": "Results Per Page",
+          "type": "string"
+        },
+        {
+          "name": "page",
+          "viewName": "Page Index",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "getAuthenticatedUser",
+      "viewName": "Get Authenticated User",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
         }
       ]
     }
