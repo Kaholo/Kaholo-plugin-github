@@ -16,7 +16,7 @@ async function sendToGithub(url, httpMethod, token, body) {
         }
     }
     if (body) {
-        reqParams.body = JSON.stringify(body);
+        reqParams.body = JSON.stringify(removeEmptyFieldsRecursive(body));
         reqParams.headers['Content-Type'] = 'application/json';
     }
     const res = await fetch(githubApiUrl + url, reqParams);
@@ -27,6 +27,15 @@ async function sendToGithub(url, httpMethod, token, body) {
 
 function removeEmptyFields(obj) {
     Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+    return obj;
+}
+
+
+function removeEmptyFieldsRecursive(obj) {
+    Object.keys(obj).forEach(key => {
+        if (obj[key] === undefined) delete obj[key];
+        else if (typeof obj[key] === "object") removeEmptyFieldsRecursive(obj[key]);
+    });
     return obj;
 }
 
@@ -42,43 +51,6 @@ async function listGithubRequest(params, settings, path, searchParams){
     return sendToGithub(path, "GET", params.token || settings.token)
 }
 
-async function listOrgs(params, settings) {
-    return listGithubRequest(params, settings, "/user/orgs");
-}
-    
-async function getAuthenticatedUser(params, settings) {
-    return sendToGithub("/user", "GET", params.token || settings.token);
-}
-
-async function listRepos(params, settings) {
-    let owner = parsers.autocomplete(params.owner);
-    if (!owner || owner === "user") {
-        return listGithubRequest(params, settings, "/user/repos");
-    }
-    return listGithubRequest(params, settings, `/orgs/${owner}/repos`);
-}
-
-async function listBranches(params, settings) {
-    const repo = parsers.autocomplete(params.repo);
-    if (!repo) throw "Must provide a repository";
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
-    }
-    return listGithubRequest(params, settings, `/repos/${repo}/branches`);
-}
-
-async function listCommits(params, settings) {
-    const repo = parsers.autocomplete(params.repo);
-    if (!repo) throw "Must provide a repository";
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
-    }
-    const branch = parsers.autocomplete(params.branch);
-    return listGithubRequest(params, settings, `/repos/${repo}/commits`, {sha: branch});
-}
-
 function stripAction(func){
     return async (action, settings) => {
         return func(action.params, settings);
@@ -87,10 +59,7 @@ function stripAction(func){
 
 module.exports = {
     sendToGithub,
-    listOrgs,
-    getAuthenticatedUser,
-    listRepos,
-    listBranches,
-    listCommits,
+    listGithubRequest,
+    removeEmptyFieldsRecursive,
     stripAction
 };
