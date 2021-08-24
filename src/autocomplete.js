@@ -1,5 +1,5 @@
 const parsers = require("./parsers");
-const { listOrgs, getAuthenticatedUser, listRepos, listBranches, listCommits } = require("./helpers");
+const { listOrgs, getAuthenticatedUser, listRepos, listBranches, listCommits } = require("./githubService");
 
 // auto complete helper methods
 
@@ -18,7 +18,7 @@ function mapAutoParams(autoParams){
  ***/
 function handleResult(result, query, parseFunc){
   if (!parseFunc) {
-    parseFunc = (item) => getAutoResult(item.full_name || item.id, item.name);
+    parseFunc = (item) => getAutoResult(item.full_name || item.login || item.id, item.name);
   }
   const items = result.map(parseFunc);
   return filterItems(items, query);
@@ -45,19 +45,23 @@ function filterItems(items, query){
 }
 
 // auto complete main methods
-function listAuto(listFunc, parseFunc){
+function listAuto(listFunc, parseFunc, compareFunc){
   return async (query, pluginSettings, triggerParameters) => {
     const settings = mapAutoParams(pluginSettings), params = mapAutoParams(triggerParameters); 
     let items = [];
-    params.per_page = 100;
+    params.per_page = 50;
     while (items.length < MAX_RESULTS) {
       let result = await listFunc(params, settings);
-      if (result.length === 0) break;
-      items = items.concat(handleResult(result, query, parseFunc));
-      if (!query) break;
-      // if found exact match, return it.
-      const exactMatch = items.find(item => item.value.toLowerCase() === query.toLowerCase() || item.id === query.toLowerCase());
-      if (exactMatch) return [exactMatch];
+      if (result.length === 0) return items;
+      items = items.concat(handleResult(result, query, parseFunc)); // add all items that matched with the query, parsed
+      if (!query) return items;
+      if (compareFunc || query.length >= Math.min(items.map(item.id.length))){ // if specified compareFunc or long enough query, check for exact match
+        // if found exact match, return it.
+        const exactMatch = items.find(compareFunc ? compareFunc(query) : (item => 
+          item.value.toLowerCase().startsWith(query.toLowerCase()) || item.id.toLowerCase().startsWith(query.toLowerCase())));
+        if (exactMatch) return [exactMatch];
+      }
+      if (result.length < 50) return items;
       params.page = (params.page || 0) + 1;
     }
     return items;
@@ -74,8 +78,10 @@ async function listOwnersAuto(query, pluginSettings, triggerParameters){
 
 module.exports = {
   listOwnersAuto,
+  listOrgsAuto: listAuto(listOrgs),
   listReposAuto: listAuto(listRepos),
   listBranchesAuto: listAuto(listBranches, getParseFromParam("name")),
   listCommitsAuto: listAuto(listCommits, (item) => getAutoResult(item.sha, 
-    `${item.commit.message} [${item.sha.substring(0, 7)}]`))
+    `${item.commit.message.replace(/[\n!@#$%^&*()+=;]/g, " ")} [${item.sha.substring(0, 7)}]`),
+    query => query && query.length > 6 ? (item) => item.id.toLowerCase().startsWith(query.toLowerCase()) : () => false)
 }

@@ -5,7 +5,7 @@
   "main": "app.js",
   "exposeRoute": true,
   "imgUrl": "logo.png",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Integration with Github API",
   "settings": [
     {
@@ -230,6 +230,74 @@
           "name": "insecureSsl",
           "viewName": "Don't Verify SSL",
           "type": "boolean"
+        },
+        {
+          "name": "notActive",
+          "viewName": "Not Active",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "createOrganizationWebhook",
+      "viewName": "Create Organization Webhook",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault"
+        },
+        {
+          "name": "org",
+          "viewName": "Organization",
+          "type": "autocomplete",
+          "autocompleteType":"function",
+          "functionName":"listOrgsAuto"
+        },
+        {
+          "name": "events",
+          "viewName": "Subcribed Events",
+          "type": "text"
+        },
+        {
+          "name": "url",
+          "viewName": "Webhook URL",
+          "type": "string"
+        },
+        {
+          "name": "contentType",
+          "viewName": "Webhook Content Type",
+          "type": "options",
+          "options": [
+            {
+              "id": "json",
+              "name": "Json"
+            },
+            {
+              "id": "form",
+              "name": "Form"
+            }
+          ]
+        },
+        {
+          "name": "secret",
+          "viewName": "Secret",
+          "type": "vault"
+        },
+        {
+          "name": "insecureSsl",
+          "viewName": "Don't Verify SSL",
+          "type": "boolean"
+        },
+        {
+          "name": "username",
+          "viewName": "Webhook Username",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "viewName": "Webhook Password",
+          "type": "vault"
         },
         {
           "name": "notActive",
