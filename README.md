@@ -8,7 +8,7 @@ This plugin is used to integrate with Github using it's REST API. You can see it
 * **Please Notice!** For almost all actions you have to provide an authentication token, either from the setiings or inside the action.
 
 ## Method: Create Commit Status
-Create a new commit status.
+Create a new commit status. You can see more on guthub commit statuses [here](https://docs.github.com/en/rest/reference/repos#statuses).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
