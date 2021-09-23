@@ -44,6 +44,17 @@ function filterItems(items, query){
   return items.splice(0, MAX_RESULTS);
 }
 
+function returnUnique(items) {
+  const ids = new Set();
+  return items.reduce((prev, cur) => {
+    if (!ids.has(cur.id)){
+      prev.push(cur);
+      ids.add(cur.id);
+    }
+    return prev;
+  }, []);
+}
+
 // auto complete main methods
 function listAuto(listFunc, parseFunc, compareFunc){
   return async (query, pluginSettings, triggerParameters) => {
@@ -53,9 +64,9 @@ function listAuto(listFunc, parseFunc, compareFunc){
     while (items.length < MAX_RESULTS) {
       let result = await listFunc(params, settings);
       if (result.length === 0) return items;
-      items = items.concat(handleResult(result, query, parseFunc)); // add all items that matched with the query, parsed
+      items = returnUnique(items.concat(handleResult(result, query, parseFunc))); // add all items that matched with the query, parsed
       if (!query) return items;
-      if (compareFunc || query.length >= Math.min(items.map(item.id.length))){ // if specified compareFunc or long enough query, check for exact match
+      if (compareFunc || query.length >= Math.min(items.map(item => item.id.length))){ // if specified compareFunc or long enough query, check for exact match
         // if found exact match, return it.
         const exactMatch = items.find(compareFunc ? compareFunc(query) : (item => 
           item.value.toLowerCase().startsWith(query.toLowerCase()) || item.id.toLowerCase().startsWith(query.toLowerCase())));
