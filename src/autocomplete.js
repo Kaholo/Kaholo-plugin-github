@@ -62,7 +62,13 @@ function listAuto(listFunc, parseFunc, compareFunc){
     let items = [];
     params.per_page = 50;
     while (items.length < MAX_RESULTS) {
-      let result = await listFunc(params, settings);
+      var result;
+      try {
+        result = await listFunc(params, settings);
+      }
+      catch (err) {
+        throw `An error encountered while using the autocomplete function: ${err.message || JSON.stringify(err)}`;
+      }
       if (result.length === 0) return items;
       items = returnUnique(items.concat(handleResult(result, query, parseFunc))); // add all items that matched with the query, parsed
       if (!query) return items;
@@ -81,10 +87,15 @@ function listAuto(listFunc, parseFunc, compareFunc){
 
 async function listOwnersAuto(query, pluginSettings, triggerParameters){
   const settings = mapAutoParams(pluginSettings), params = mapAutoParams(triggerParameters); 
-  const curUserLogin = (await getAuthenticatedUser(params, settings)).login;
-  const owners = [getAutoResult("user", curUserLogin),
-                  ...(await listOrgs(params, settings)).map(getParseFromParam("login"))];
-  return filterItems(owners, query);
+  try {
+    const curUserLogin = (await getAuthenticatedUser(params, settings)).login;
+    const owners = [getAutoResult("user", curUserLogin),
+                    ...(await listOrgs(params, settings)).map(getParseFromParam("login"))];
+    return filterItems(owners, query);
+  }
+  catch (err){
+    throw `An error encountered while listing owners: ${err.message || JSON.stringify(err)}`;
+  }
 }
 
 module.exports = {
