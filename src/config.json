@@ -5,7 +5,7 @@
   "main": "app.js",
   "exposeRoute": true,
   "imgUrl": "logo.png",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "description": "Integration with Github API",
   "settings": [
     {
@@ -617,6 +617,136 @@
           "description": "The OAuth token of the user to authenticate with.",
           "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
           "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+        }
+      ]
+    },
+    {
+      "name": "getRepository",
+      "viewName": "Get Repository",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault",
+          "description": "The OAuth token of the user to authenticate with.",
+          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
+          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listOwnersAuto",
+          "description": "Username or Organization with access owner rights to the repository.",
+          "placeholder": "myusername",
+          "learnUrl": "https://docs.github.com/en/authentication"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listReposAuto",
+          "description": "The repository to return information about.",
+          "placeholder": "myrepo",
+          "learnUrl": "https://docs.github.com/en/repositories"
+        }
+      ]
+    },
+    {
+      "name": "getPullRequest",
+      "viewName": "Get Pull Request",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault",
+          "description": "The OAuth token of the user to authenticate with.",
+          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
+          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listOwnersAuto",
+          "description": "The owner of the repo of the pull request.",
+          "placeholder": "myusername",
+          "learnUrl": "https://docs.github.com/en/authentication"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listReposAuto",
+          "description": "The repository of the pull request.",
+          "placeholder": "myrepo",
+          "learnUrl": "https://docs.github.com/en/repositories"
+        },
+        {
+          "name": "pr",
+          "viewName": "Pull Request",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listPRAuto",
+          "description": "The pull request to return information about.",
+          "placeholder": "Pull Request Title",
+          "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
+        }
+      ]
+    },
+    {
+      "name": "postPRComment",
+      "viewName": "Post Comment On Pull Request",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault",
+          "description": "The OAuth token of the user to authenticate with.",
+          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
+          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listOwnersAuto",
+          "description": "The owner of the repo of the pull request.",
+          "placeholder": "myusername",
+          "learnUrl": "https://docs.github.com/en/authentication"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listReposAuto",
+          "description": "The repository of the pull request.",
+          "placeholder": "myrepo",
+          "learnUrl": "https://docs.github.com/en/repositories"
+        },
+        {
+          "name": "pr",
+          "viewName": "Pull Request",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listPRAuto",
+          "description": "The pull request to post a comment on.",
+          "placeholder": "Pull Request Title",
+          "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
+        },
+        {
+          "name": "comment",
+          "viewName": "Comment",
+          "type": "text",
+          "description": "The comment to be submitted.",
+          "placeholder": "This is a comment",
+          "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/commenting-on-a-pull-request"
         }
       ]
     }

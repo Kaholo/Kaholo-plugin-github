@@ -57,9 +57,20 @@ function stripAction(func){
     };
 }
 
+function getRepo(params){
+    const repo = parsers.autocomplete(params.repo);
+    if (!repo) throw "Must provide a repository";
+    if (!repo.includes("/")){
+        throw(`Bad repository name format.
+Repository Name should be in the format of {owner}/{repo}`);
+    }
+    return repo;
+}
+
 module.exports = {
     sendToGithub,
     listGithubRequest,
     removeEmptyFieldsRecursive,
-    stripAction
+    stripAction,
+    getRepo
 };

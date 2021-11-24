@@ -44,5 +44,28 @@ module.exports = {
         if (typeof(value) === "string") return value.trim();
         throw `Value ${value} is not a valid string`;
     },
+    pullRequest: (value)=>{
+        if (typeof(value) === "string"){
+            if (isNaN(value)){
+                // treat string as url
+                try {
+                    const url = new URL(value);
+                    const [paramType, id] = url.pathname.match(/\/(issues|pulls)\/([0-9]+)/).slice(1);
+                    return {paramType, id, url};
+                }
+                catch (err) {
+                    throw `Problem with pull request value format: ${err.message}`;
+                }
+            }
+            return {paramType: "pulls", id: value};
+        }
+        if (typeof(value) === "object"){ // if autocomplete param
+            return {paramType: "pulls", id: value.id}
+        }
+        if (typeof(value) === "number"){ // if provided ID as number from code
+            return {paramType: "pulls", id: new String(value)}
+        }
+        throw "Unsupported pull request value format";
+    },
     array: parseArray
 }

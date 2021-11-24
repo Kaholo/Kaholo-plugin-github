@@ -101,3 +101,30 @@ Get Authenticated User
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
+
+## Method: Get Repository
+Get information on the specified repository.
+
+### Parameters
+1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
+2. Owner (Autocomplete) **Optional** - The owner of the repository. Default value is the authenticated user.
+3. Repository (Autocomplete) **Required** - The repository to return information about.
+
+## Method: Get Pull Request
+Get information on the specified pull request.
+
+### Parameters
+1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
+2. Owner (Autocomplete) **Optional** - The owner of the repository. Default value is the authenticated user.
+3. Repository (Autocomplete) **Required For Pull Request Dropdown** - The repository of the pull request. Needed in case choosing the pull request from the dropdown menu in the UI. Not required in case of providing the Pull request by URL.
+4. Pull Request (Autocomplete) **Required** - The pull request to return information about. Can also be provided by the URL of the pull request or it's related issue.
+
+## Method: Post Comment On Pull Request
+Post a comment on the specified pull request.
+
+### Parameters
+1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
+2. Owner (Autocomplete) **Optional** - The owner of the repository. Default value is the authenticated user.
+3. Repository (Autocomplete) **Required For Pull Request Dropdown** - The repository of the pull request. Needed in case choosing the pull request from the dropdown menu in the UI. Not required in case of providing the Pull request by URL.
+4. Pull Request (Autocomplete) **Required** - The pull request to post the comment on. Can also be provided by the URL of the pull request or it's related issue, or with the 'comments_url' field of the pull request.
+5. Comment (Text) **Required** - The content of the comment to post on the pull request.
