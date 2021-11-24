@@ -1,5 +1,5 @@
 const parsers = require("./parsers");
-const { listOrgs, getAuthenticatedUser, listRepos, listBranches, listCommits } = require("./githubService");
+const { listOrgs, getAuthenticatedUser, listRepos, listBranches, listCommits, listPullRequests } = require("./github.service");
 
 // auto complete helper methods
 
@@ -18,7 +18,7 @@ function mapAutoParams(autoParams){
  ***/
 function handleResult(result, query, parseFunc){
   if (!parseFunc) {
-    parseFunc = (item) => getAutoResult(item.full_name || item.login || item.id, item.name);
+    parseFunc = (item) => getAutoResult(`${item.full_name || item.login || item.id || ""}`, item.name || item.title);
   }
   const items = result.map(parseFunc);
   return filterItems(items, query);
@@ -100,6 +100,7 @@ async function listOwnersAuto(query, pluginSettings, triggerParameters){
 
 module.exports = {
   listOwnersAuto,
+  listPRAuto: listAuto(listPullRequests, item => getAutoResult(new String(item.number), item.title)),
   listOrgsAuto: listAuto(listOrgs),
   listReposAuto: listAuto(listRepos),
   listBranchesAuto: listAuto(listBranches, getParseFromParam("name")),

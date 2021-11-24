@@ -1,17 +1,13 @@
-const { sendToGithub, listGithubRequest, removeEmptyFieldsRecursive} = require("./helpers");
+const { sendToGithub, listGithubRequest, getRepo} = require("./helpers");
 const parsers = require("./parsers");
 
 async function sendStatus(action, settings) {
     const {state, linkedUrl, description, context} = action.params;
-    const repo = parsers.autocomplete(action.params.repo);
+    const repo = getRepo(params);
     const sha = parsers.autocomplete(action.params.sha);
     const token = action.params.token || settings.token;
-    if (!token || !repo || !sha || !state){
+    if (!token || !sha || !state){
         throw("One of required parameters was not given");
-    }
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
     }
     const reqUrl = `/repos/${repo}/statuses/${sha}`;
     const body = {
@@ -71,16 +67,12 @@ Repository Name should be in the format of {owner}/{repo}`);
 
 async function createRepoWebhook(action, settings) {
     const {url, secret, insecureSsl, notActive} = action.params;
-    const repo = parsers.autocomplete(action.params.repo);
+    const repo = getRepo(params);
     const contentType = action.params.contentType || "json";
     const events = parsers.array(action.params.events);
     const token = action.params.token || settings.token;
-    if (!token || !repo || !url) {
+    if (!token || !url) {
         throw("One of required parameters was not given");
-    }
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
     }
     const reqPath = `/repos/${repo}/hooks`;
     const body = {
@@ -132,6 +124,39 @@ async function listOrgs(params, settings) {
 async function getAuthenticatedUser(params, settings) {
     return sendToGithub("/user", "GET", params.token || settings.token);
 }
+    
+async function getRepository(params, settings) {
+    return sendToGithub(`/repos/${getRepo(params)}`, "GET", params.token || settings.token);
+}
+
+async function getPullRequest(params, settings) {
+    const pr = parsers.pullRequest(params.pr);
+    if (!pr || pr.paramType !== "pulls"){
+        throw "Must provide the pull request either from autocomplete or it's ID from code."
+    }
+    if (pr.url) return sendToGithub(pr.url.pathname, "GET", params.token || settings.token);
+    return sendToGithub(`/repos/${getRepo(params)}/pulls/${pr.id}`, "GET", params.token || settings.token);
+}
+
+async function postPRComment(params, settings) {
+    const pr = parsers.pullRequest(params.pr);
+    const comment = parsers.string(params.comment);
+    if (!pr || !comment){
+        throw("One of required parameters was not given");
+    }
+    var path;    
+    if (pr.paramType === "issues"){
+        path = pr.url.pathname;
+        if (!path.endsWith("/comments")){
+            path += "/comments";
+        }
+    }
+    else{
+        const pullRequest = await getPullRequest(params, settings);
+        path = (new URL(pullRequest.comments_url)).pathname;
+    }
+    return sendToGithub(path, "POST", params.token || settings.token, {body: comment});
+}
 
 async function listRepos(params, settings) {
     let owner = parsers.autocomplete(params.owner);
@@ -142,24 +167,19 @@ async function listRepos(params, settings) {
 }
 
 async function listBranches(params, settings) {
-    const repo = parsers.autocomplete(params.repo);
-    if (!repo) throw "Must provide a repository";
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
-    }
+    const repo = getRepo(params);
     return listGithubRequest(params, settings, `/repos/${repo}/branches`);
 }
 
 async function listCommits(params, settings) {
-    const repo = parsers.autocomplete(params.repo);
-    if (!repo) throw "Must provide a repository";
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
-    }
+    const repo = getRepo(params);
     const branch = parsers.autocomplete(params.branch);
     return listGithubRequest(params, settings, `/repos/${repo}/commits`, {sha: branch});
+}
+
+async function listPullRequests(params, settings) {
+    const repo = getRepo(params);
+    return listGithubRequest(params, settings, `/repos/${repo}/pulls`);
 }
 
 module.exports = {
@@ -168,10 +188,14 @@ module.exports = {
     createRepoFromTemplate,
     createRepoWebhook,
     createOrganizationWebhook,
+    postPRComment,
     // list/get funcs
     getAuthenticatedUser, 
+    getRepository,
+    getPullRequest,
     listOrgs,
     listRepos,
     listBranches,
-    listCommits
+    listCommits,
+    listPullRequests
 }
