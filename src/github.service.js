@@ -3,7 +3,7 @@ const parsers = require("./parsers");
 
 async function sendStatus(action, settings) {
     const {state, linkedUrl, description, context} = action.params;
-    const repo = getRepo(params);
+    const repo = getRepo(action.params);
     const sha = parsers.autocomplete(action.params.sha);
     const token = action.params.token || settings.token;
     if (!token || !sha || !state){
@@ -67,7 +67,7 @@ Repository Name should be in the format of {owner}/{repo}`);
 
 async function createRepoWebhook(action, settings) {
     const {url, secret, insecureSsl, notActive} = action.params;
-    const repo = getRepo(params);
+    const repo = getRepo(action.params);
     const contentType = action.params.contentType || "json";
     const events = parsers.array(action.params.events);
     const token = action.params.token || settings.token;
