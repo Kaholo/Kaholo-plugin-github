@@ -8,7 +8,7 @@ This plugin is used to integrate with Github using its REST API. You can see its
 * **Please Notice!** For almost all actions you have to provide an authentication token, either from the Settings or from within the action.
 
 ## Method: Create Commit Status
-Create a new commit status. You can see more on Github commit statuses [here](https://docs.github.com/en/rest/reference/repos#statuses).
+Create a new commit status. You can see more about Github commit statuses [here](https://docs.github.com/en/rest/reference/repos#statuses).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -22,7 +22,7 @@ Create a new commit status. You can see more on Github commit statuses [here](ht
 9. Context (String) **Optional** - A label to differentiate this status from the status of other systems. This field is case-insensitive. Default value is 'default'.
 
 ## Method: Create New Repository
-Create a new repository.
+Create a new repository. You can see more about Github repositories [here](https://docs.github.com/en/get-started/quickstart/create-a-repo).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -34,7 +34,7 @@ Create a new repository.
 7. GitIgnore Template (String) **Optional** - Desired language or platform .gitignore template to apply. Use the name of the template without the extension. For example, "Haskell".
 
 ## Method: Create Repository From Template
-Create a new repository from a template repository.
+Create a new repository from a template repository. You can see more about creating Github repositories from a template [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -45,7 +45,7 @@ Create a new repository from a template repository.
 6. Private (Boolean) **Optional** - If specified, the repository will be private (Only users with access to repos of the owner will be able to access them). Default value is false.
 
 ## Method: Create Repository Webhook
-Create a repository webhook for the specified repository.
+Create a repository webhook for the specified repository. You can see more about Github webhooks [here](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -59,7 +59,7 @@ Create a repository webhook for the specified repository.
 9. Not Active (Boolean) **Optional** - If specified, create the webhook in un-active mode. Github doesn't send requests to webhooks as long as they are not active.
 
 ## Method: Create Organization Webhook
-Create a repository webhook for the specified organization.
+Create a repository webhook for the specified organization. You can see more about creating Github organization webhooks [here](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -74,7 +74,7 @@ Create a repository webhook for the specified organization.
 11. Not Active (Boolean) **Optional** - If specified, create the webhook in un-active mode. Github doesn't send requests to webhooks as long as they are not active.
 
 ## Method: List Connected Organizations
-List the organizations connected to the authenticated user.
+List the organizations connected to the authenticated user. You can see more about listing organizations [here](https://docs.github.com/en/rest/reference/orgs).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -82,7 +82,7 @@ List the organizations connected to the authenticated user.
 3. Page Index (String) **Optional** - The index of the page of results to return. Default value is 0.
 
 ## Method: List Available Repositories
-List all available repositories of the specified owner.
+List all available repositories of the specified owner. You can see more about listing Github repositories [here](https://docs.github.com/en/rest/reference/repos).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** -  The OAuth token of the user to authenticate with.
@@ -91,7 +91,7 @@ List all available repositories of the specified owner.
 4. Page Index (String) **Optional** - The index of the page of results to return. Default value is 0.
 
 ## Method: List Branches
-List branches of the specified repository.
+List branches of the specified repository. You can see more about listing branches [here](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/viewing-branches-in-your-repository).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -101,7 +101,7 @@ List branches of the specified repository.
 5. Page Index (String) **Optional** - The index of the page of results to return. Default value is 0.
 
 ## Method: List Commits
-List all commits and their SHA, of the specified repository, and possibly branch inside the repository.
+List all commits and their SHA, of the specified repository, and possibly branch inside the repository. You can see more about listing commits [here](https://docs.github.com/en/search-github/searching-on-github/searching-commits).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with.
@@ -118,7 +118,7 @@ Get information on the Authenticated User.
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
 
 ## Method: Get Repository
-Get information on the specified repository.
+Get information on the specified repository. You can see more about Github repositories [here](https://docs.github.com/en/repositories).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
@@ -126,7 +126,7 @@ Get information on the specified repository.
 3. Repository (Autocomplete) **Required** - The repository to return information about.
 
 ## Method: Get Pull Request
-Get information on the specified pull request.
+Get information on the specified pull request. You can see more about Github pull requests [here](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
@@ -135,7 +135,7 @@ Get information on the specified pull request.
 4. Pull Request (Autocomplete) **Required** - The pull request to return information about. Can also be provided by the URL of the pull request or its related issue.
 
 ## Method: Post Comment On Pull Request
-Post a comment on the specified pull request.
+Post a comment on the specified pull request. You can see more about commenting on pull requests [here](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/commenting-on-a-pull-request).
 
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
