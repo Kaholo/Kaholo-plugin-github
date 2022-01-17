@@ -622,7 +622,7 @@
     },
     {
       "name": "getRepository",
-      "viewName": "Get Repository",
+      "viewName": "Get Repository Info",
       "params": [
         {
           "name": "token",

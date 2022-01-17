@@ -117,7 +117,7 @@ Get information on the Authenticated User.
 ### Parameters
 1. Authentication Token (Vault) **Optional** - The OAuth token of the user to authenticate with and return the info on.
 
-## Method: Get Repository
+## Method: Get Repository Info
 Get information on the specified repository. You can see more about Github repositories [here](https://docs.github.com/en/repositories).
 
 ### Parameters
