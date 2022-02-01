@@ -9,6 +9,7 @@ module.exports = {
     createRepoWebhook: githubService.createRepoWebhook,
     createOrganizationWebhook: githubService.createOrganizationWebhook,
     postPRComment: stripAction(githubService.postPRComment),
+    setBranchProtectionRule: githubService.setBranchProtectionRule,
     // list/get funcs
     getAuthenticatedUser: stripAction(githubService.getAuthenticatedUser),
     getRepository: stripAction(githubService.getRepository),

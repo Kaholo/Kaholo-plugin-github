@@ -34,7 +34,7 @@ function removeEmptyFields(obj) {
 function removeEmptyFieldsRecursive(obj) {
     Object.keys(obj).forEach(key => {
         if (obj[key] === undefined) delete obj[key];
-        else if (typeof obj[key] === "object") removeEmptyFieldsRecursive(obj[key]);
+        else if (typeof obj[key] === "object" && obj[key]!==null) removeEmptyFieldsRecursive(obj[key]);
     });
     return obj;
 }

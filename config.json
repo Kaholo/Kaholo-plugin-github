@@ -5,7 +5,7 @@
   "main": "app.js",
   "exposeRoute": true,
   "imgUrl": "logo.png",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "keywords": ["github api", "git", "repository", "commit", "pull request", "webhook", "branch"],
   "description": "Integration with Github API",
   "settings": [
@@ -747,6 +747,79 @@
           "description": "The comment to be submitted.",
           "placeholder": "This is a comment",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/commenting-on-a-pull-request"
+        }
+      ]
+    },
+    {
+      "name": "setBranchProtectionRule",
+      "viewName": "Set Branch Protection Rule",
+      "params": [
+        {
+          "name": "token",
+          "viewName": "Authentication Token",
+          "type": "vault",
+          "description": "The OAuth token of the user to authenticate with.",
+          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
+          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+        },
+        {
+          "name": "owner",
+          "viewName": "Owner",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listOwnersAuto",
+          "description": "The owner of the repo of the pull request.",
+          "placeholder": "myusername",
+          "learnUrl": "https://docs.github.com/en/authentication"
+        },
+        {
+          "name": "repo",
+          "viewName": "Repository",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listReposAuto",
+          "description": "The repository of the pull request.",
+          "placeholder": "myrepo",
+          "learnUrl": "https://docs.github.com/en/repositories"
+        },
+        {
+          "name": "branch",
+          "viewName": "Branch",
+          "type": "autocomplete",
+          "autocompleteType": "function",
+          "functionName": "listBranchesAuto",
+          "description": "The branch of the commit to send a status check about.",
+          "placeholder": "branchname",
+          "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches"
+        },
+        {
+          "name": "contexts",
+          "viewName": "Required Checks",
+          "type": "text",
+          "description": "The contexts which should be required. String array or one per line",
+          "placeholder": "@ci/required-check",
+          "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/commenting-on-a-pull-request"
+        },
+        {
+          "name": "dismissStaleReviews",
+          "viewName": "Dismiss Stale Reviews",
+          "type": "boolean",
+          "description": "Set to 'true' if you want to automatically dismiss approving reviews when someone pushes a new commit.",
+          "learnUrl": "https://docs.github.com/en/rest/reference/branches#update-branch-protection"
+        },
+        {
+          "name": "requireOwnerReview",
+          "viewName": "Require Owner Review",
+          "type": "boolean",
+          "description": "Blocks merging pull requests until code owners have reviewed.",
+          "learnUrl": "https://docs.github.com/en/rest/reference/branches#update-branch-protection"
+        },
+        {
+          "name": "approvingCount",
+          "viewName": "Approving Count",
+          "type": "string",
+          "description": "Specifies the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers.",
+          "learnUrl": "https://docs.github.com/en/rest/reference/branches#update-branch-protection"
         }
       ]
     }
