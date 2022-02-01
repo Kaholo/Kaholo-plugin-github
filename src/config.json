@@ -6,6 +6,7 @@
   "exposeRoute": true,
   "imgUrl": "logo.png",
   "version": "1.4.0",
+  "keywords": ["github api", "git", "repository", "commit", "pull request", "webhook", "branch"],
   "description": "Integration with Github API",
   "settings": [
     {
@@ -273,7 +274,7 @@
         },
         {
           "name": "events",
-          "viewName": "Subcribed Events",
+          "viewName": "Subscribed Events",
           "type": "text",
           "description": "Subscribe the webhook to the described sevices.",
           "placeholder": "push\npull_request",
@@ -347,7 +348,7 @@
           "type": "autocomplete",
           "autocompleteType": "function",
           "functionName": "listOrgsAuto",
-          "description": "The organization to create th webhook for.",
+          "description": "The organization to create the webhook for.",
           "placeholder": "myOrganization",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -363,7 +364,7 @@
           "name": "url",
           "viewName": "Webhook URL",
           "type": "string",
-          "description": "Send event payloads to this URL",
+          "description": "Send event payloads to this URL.",
           "placeholder": "http://example.kaholo.io/webhook/github/push",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -404,7 +405,7 @@
           "name": "username",
           "viewName": "Webhook Username",
           "type": "string",
-          "description": "If webhook requires authentication use this username.",
+          "description": "If webhook requires authentication, use this username.",
           "placeholder": "myuser",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -412,7 +413,7 @@
           "name": "password",
           "viewName": "Webhook Password",
           "type": "vault",
-          "description": "If webhook requires authentication use this password.",
+          "description": "If webhook requires authentication, use this password.",
           "placeholder": "myPass1234!",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -427,7 +428,7 @@
     },
     {
       "name": "listOrgs",
-      "viewName": "List Conneceted Organizations",
+      "viewName": "List Connected Organizations",
       "params": [
         {
           "name": "token",
@@ -523,7 +524,7 @@
           "type": "autocomplete",
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository to list it's branches.",
+          "description": "The repository to list its branches.",
           "placeholder": "myrepo1",
           "learnUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/viewing-branches-in-your-repository"
         },
@@ -573,7 +574,7 @@
           "type": "autocomplete",
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository name..",
+          "description": "The repository name.",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/search-github/searching-on-github/searching-commits"
         },
@@ -621,7 +622,7 @@
     },
     {
       "name": "getRepository",
-      "viewName": "Get Repository",
+      "viewName": "Get Repository Info",
       "params": [
         {
           "name": "token",
