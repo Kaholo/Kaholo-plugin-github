@@ -88,6 +88,8 @@ function listAuto(listFunc, parseFunc, compareFunc) {
         return [exactMatch];
       }
       params.page = (params.page || 0) + 1;
+      // fetch until the result contains less items
+      // than requested (which means it is the last page of data)
     } while (result.length === RESULTS_PER_PAGE);
     return items;
   };
