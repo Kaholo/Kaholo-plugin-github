@@ -74,10 +74,27 @@ Repository Name should be in the format of {owner}/{repo}`);
     return repo;
 }
 
+function createGithubSearchQuery(params) {
+    const querySegments = [];
+    if (params.query) {
+        querySegments.push(encodeURIComponent(params.query));
+    }
+    let owner = parsers.autocomplete(params.owner);
+    if (owner === "user") {
+        const { login: userLogin } = await getAuthenticatedUser(params, settings);
+        owner = userLogin;
+    }
+    if (owner) {
+        querySegments.push(`user:${owner}`);
+    }
+    return querySegments.join("+");
+}
+
 module.exports = {
     sendToGithub,
     listGithubRequest,
     removeEmptyFieldsRecursive,
     stripAction,
-    getRepo
+    getRepo,
+    createGithubSearchQuery,
 };

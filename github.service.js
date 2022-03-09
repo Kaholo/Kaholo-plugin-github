@@ -1,4 +1,4 @@
-const { sendToGithub, listGithubRequest, getRepo } = require("./helpers");
+const { sendToGithub, listGithubRequest, getRepo, createGithubSearchQuery } = require("./helpers");
 const parsers = require("./parsers");
 
 async function sendStatus(action, settings) {
@@ -190,19 +190,7 @@ async function listRepos(params, settings) {
 }
 
 async function searchRepos(params, settings) {
-    const querySegments = [];
-    if (params.query) {
-        querySegments.push(encodeURIComponent(params.query));
-    }
-    let owner = parsers.autocomplete(params.owner);
-    if (owner === "user") {
-        const { login: userLogin } = await getAuthenticatedUser(params, settings);
-        owner = userLogin;
-    }
-    if (owner) {
-        querySegments.push(`user:${owner}`);
-    }
-    const query = querySegments.join("+");
+    const query = createGithubSearchQuery(params);
     const repos = await listGithubRequest(params, settings, "/search/repositories", query && {
         q: query
     });
