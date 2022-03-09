@@ -47,13 +47,10 @@ async function listGithubRequest(params, settings, path, searchParams){
     });
     if (Object.keys(searchParams).length > 0) {
         path += "?";
-        path += Object.entries(searchParams).map(([ key, value ]) => {
-            // if param is the query do not encode the value, otherwise the github does not parse it correctly
-            if (key === "q") {
-                return `q=${value}`
-            }
-            return `${key}=${encodeURIComponent(value)}`
-        }).join('&')
+        // if param is the query do not encode the value, otherwise the github does not parse it correctly
+        path += Object.entries(searchParams).map(([ key, value ]) =>
+            `${key}=${key === "q" ? value : encodeURIComponent(value)}`
+        ).join('&');
     }
     return sendToGithub(path, "GET", params.token || settings.token)
 }
