@@ -1,5 +1,5 @@
 const parsers = require("./parsers");
-const { listOrgs, getAuthenticatedUser, listRepos, listBranches, listCommits, listPullRequests } = require("./github.service");
+const { listOrgs, getAuthenticatedUser, listBranches, listCommits, listPullRequests, searchRepos } = require("./github.service");
 
 // auto complete helper methods
 
@@ -61,6 +61,7 @@ function listAuto(listFunc, parseFunc, compareFunc){
     const settings = mapAutoParams(pluginSettings), params = mapAutoParams(triggerParameters); 
     let items = [];
     params.per_page = 50;
+    params.query = query;
     while (items.length < MAX_RESULTS) {
       var result;
       try {
@@ -102,7 +103,7 @@ module.exports = {
   listOwnersAuto,
   listPRAuto: listAuto(listPullRequests, item => getAutoResult(new String(item.number), item.title)),
   listOrgsAuto: listAuto(listOrgs),
-  listReposAuto: listAuto(listRepos),
+  listReposAuto: listAuto(searchRepos),
   listBranchesAuto: listAuto(listBranches, getParseFromParam("name")),
   listCommitsAuto: listAuto(listCommits, (item) => getAutoResult(item.sha, 
     `${item.commit.message.replace(/[\n!@#$%^&*()+=;]/g, " ")} [${item.sha.substring(0, 7)}]`),

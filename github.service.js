@@ -189,6 +189,26 @@ async function listRepos(params, settings) {
     return listGithubRequest(params, settings, `/orgs/${owner}/repos`);
 }
 
+async function searchRepos(params, settings) {
+    const querySegments = [];
+    if (params.query) {
+        querySegments.push(encodeURIComponent(params.query));
+    }
+    let owner = parsers.autocomplete(params.owner);
+    if (owner === "user") {
+        const { login: userLogin } = await getAuthenticatedUser(params, settings);
+        owner = userLogin;
+    }
+    if (owner) {
+        querySegments.push(`user:${owner}`);
+    }
+    const query = querySegments.join("+");
+    const repos = await listGithubRequest(params, settings, "/search/repositories", query && {
+        q: query
+    });
+    return repos.items;
+}
+
 async function listBranches(params, settings) {
     const repo = getRepo(params);
     return listGithubRequest(params, settings, `/repos/${repo}/branches`);
@@ -222,4 +242,5 @@ module.exports = {
     listBranches,
     listCommits,
     listPullRequests,
+    searchRepos,
 };
