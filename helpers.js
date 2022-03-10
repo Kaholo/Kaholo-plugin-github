@@ -1,76 +1,79 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
 
-async function sendToGithub(url, httpMethod, token, body) {
-    if (!token) {
-        throw "Must provide Authentication Token!";
-    }
-    const accept = `application/vnd.github.${url.endsWith("generate") ? "baptiste-preview" : "v3"}+json`;
-    const reqParams = {
-        method: httpMethod,
-        headers: {  
-            'Accept': accept,
-            'Authorization': "token " + token
-        }
-    }
-    if (body) {
-        reqParams.body = JSON.stringify(removeEmptyFieldsRecursive(body));
-        reqParams.headers['Content-Type'] = 'application/json';
-    }
-    const res = await fetch(githubApiUrl + url, reqParams);
-    const jsonRes = await res.json();
-    if (!res.ok || jsonRes.message === "Not Found") { throw jsonRes };
-    return jsonRes;
-}
-
 function removeEmptyFields(obj) {
-    Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
-    return obj;
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
+  return resultObj;
 }
-
 
 function removeEmptyFieldsRecursive(obj) {
-    Object.keys(obj).forEach(key => {
-        if (obj[key] === undefined) delete obj[key];
-        else if (typeof obj[key] === "object" && obj[key]!==null) removeEmptyFieldsRecursive(obj[key]);
-    });
-    return obj;
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => {
+    if (resultObj[key] === undefined) { delete resultObj[key]; } else if (typeof resultObj[key] === "object" && resultObj[key] !== null) { removeEmptyFieldsRecursive(resultObj[key]); }
+  });
+  return resultObj;
 }
 
-async function listGithubRequest(params, settings, path, searchParams){
-    searchParams = removeEmptyFields({
-        ...searchParams, 
-        page: parsers.number(params.page), 
-        per_page: parsers.number(params.per_page)
-    });
-    if (Object.keys(searchParams).length > 0) {
-        path += "?" + new URLSearchParams(searchParams);
-    }
-    return sendToGithub(path, "GET", params.token || settings.token)
+async function sendToGithub(url, httpMethod, token, body) {
+  if (!token) {
+    throw new Error("Must provide Authentication Token!");
+  }
+  const accept = `application/vnd.github.${url.endsWith("generate") ? "baptiste-preview" : "v3"}+json`;
+  const reqParams = {
+    method: httpMethod,
+    headers: {
+      Accept: accept,
+      Authorization: `token ${token}`,
+    },
+  };
+  if (body) {
+    reqParams.body = JSON.stringify(removeEmptyFieldsRecursive(body));
+    reqParams.headers["Content-Type"] = "application/json";
+  }
+  const res = await fetch(githubApiUrl + url, reqParams);
+  const jsonRes = await res.json();
+  if (!res.ok || jsonRes.message === "Not Found") { throw jsonRes; }
+  return jsonRes;
 }
 
-function stripAction(func){
-    return async (action, settings) => {
-        return func(action.params, settings);
-    };
+async function listGithubRequest(params, settings, path, searchParams) {
+  const resolvedSearchParams = removeEmptyFields({
+    ...searchParams,
+    page: parsers.number(params.page),
+    per_page: parsers.number(params.per_page),
+  });
+  let resolvedPath = path;
+  if (Object.keys(resolvedSearchParams).length > 0) {
+    resolvedPath += "?";
+    // if param is the query do not encode the value,
+    // otherwise the github does not parse it correctly
+    resolvedPath += Object.entries(resolvedSearchParams).map(([key, value]) => `${key}=${key === "q" ? value : encodeURIComponent(value)}`).join("&");
+  }
+  return sendToGithub(resolvedPath, "GET", params.token || settings.token);
 }
 
-function getRepo(params){
-    const repo = parsers.autocomplete(params.repo);
-    if (!repo) throw "Must provide a repository";
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
-    }
-    return repo;
+function stripAction(func) {
+  return async (action, settings) => func(action.params, settings);
+}
+
+function getRepo(params) {
+  const repo = parsers.autocomplete(params.repo);
+  if (!repo) {
+    throw new Error("Must provide a repository");
+  }
+  if (!repo.includes("/")) {
+    throw new Error("Bad repository name format.\nRepository Name should be in the format of {owner}/{repo}");
+  }
+  return repo;
 }
 
 module.exports = {
-    sendToGithub,
-    listGithubRequest,
-    removeEmptyFieldsRecursive,
-    stripAction,
-    getRepo
+  sendToGithub,
+  listGithubRequest,
+  removeEmptyFieldsRecursive,
+  stripAction,
+  getRepo,
 };
