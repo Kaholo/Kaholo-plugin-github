@@ -71,7 +71,7 @@ Repository Name should be in the format of {owner}/{repo}`);
     return repo;
 }
 
-function createGithubSearchQuery(params) {
+async function createGithubSearchQuery(params) {
     const querySegments = [];
     if (params.query) {
         querySegments.push(encodeURIComponent(params.query));
