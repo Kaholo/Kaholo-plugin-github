@@ -1,4 +1,7 @@
-const { sendToGithub, listGithubRequest, getRepo } = require("./helpers");
+const { CREATE_REPO_FAILED_MESSAGE, CREATE_ORG_WEBHOOK_FAILED_MESSAGE } = require("./consts");
+const {
+  sendToGithub, listGithubRequest, getRepo, handleGithubNotFoundError,
+} = require("./helpers");
 const parsers = require("./parsers");
 
 async function sendStatus(action, settings) {
@@ -44,7 +47,7 @@ async function createRepo(action, settings) {
     description: parsers.string(description),
   };
 
-  return sendToGithub(reqPath, "POST", token, body);
+  return sendToGithub(reqPath, "POST", token, body).catch(handleGithubNotFoundError(CREATE_REPO_FAILED_MESSAGE));
 }
 
 async function createRepoFromTemplate(action, settings) {
@@ -123,7 +126,7 @@ async function createOrganizationWebhook(action, settings) {
     active: !parsers.boolean(notActive),
   };
 
-  return sendToGithub(reqPath, "POST", token, body);
+  return sendToGithub(reqPath, "POST", token, body).catch(handleGithubNotFoundError(CREATE_ORG_WEBHOOK_FAILED_MESSAGE));
 }
 
 async function setBranchProtectionRule(action, settings) {
