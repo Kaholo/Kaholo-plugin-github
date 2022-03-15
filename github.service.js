@@ -129,7 +129,8 @@ async function createOrganizationWebhook(action, settings) {
 async function setBranchProtectionRule(action, settings) {
   const { params } = action;
   const repo = getRepo(params);
-  const reqPath = `/repos/${repo}/branches/${params.branch}/protection`;
+  const branch = parsers.autocomplete(params.branch);
+  const reqPath = `/repos/${repo}/branches/${branch}/protection`;
   const body = {
     required_status_checks: {
       strict: true,
