@@ -100,6 +100,12 @@ async function createRepoWebhook(action, settings) {
   return sendToGithub(reqPath, "POST", token, body);
 }
 
+async function updateOrganizationWebhook({
+  org, token, hookId, body,
+}) {
+  return sendToGithub(`/orgs/${org}/hooks/${hookId}`, "PATCH", token, body);
+}
+
 async function createOrganizationWebhook(action, settings) {
   const {
     url, secret, insecureSsl, notActive, username, password,
@@ -126,13 +132,28 @@ async function createOrganizationWebhook(action, settings) {
     active: !parsers.boolean(notActive),
   };
 
-  return sendToGithub(reqPath, "POST", token, body).catch(handleGithubNotFoundError(CREATE_ORG_WEBHOOK_FAILED_MESSAGE));
+  const webhookResult = await sendToGithub(reqPath, "POST", token, body).catch(
+    handleGithubNotFoundError(CREATE_ORG_WEBHOOK_FAILED_MESSAGE),
+  );
+  if (!body.active) {
+    await updateOrganizationWebhook({
+      org,
+      token,
+      hookId: webhookResult.id,
+      body: {
+        active: false,
+      },
+    });
+    webhookResult.active = false;
+  }
+  return webhookResult;
 }
 
 async function setBranchProtectionRule(action, settings) {
   const { params } = action;
   const repo = getRepo(params);
-  const reqPath = `/repos/${repo}/branches/${params.branch}/protection`;
+  const branch = parsers.autocomplete(params.branch);
+  const reqPath = `/repos/${repo}/branches/${branch}/protection`;
   const body = {
     required_status_checks: {
       strict: true,
