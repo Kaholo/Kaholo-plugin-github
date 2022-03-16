@@ -97,6 +97,12 @@ async function createRepoWebhook(action, settings) {
   return sendToGithub(reqPath, "POST", token, body);
 }
 
+async function updateOrganizationWebhook({
+  org, token, hookId, body,
+}) {
+  return sendToGithub(`/orgs/${org}/hooks/${hookId}`, "PATCH", token, body);
+}
+
 async function createOrganizationWebhook(action, settings) {
   const {
     url, secret, insecureSsl, notActive, username, password,
@@ -123,7 +129,19 @@ async function createOrganizationWebhook(action, settings) {
     active: !parsers.boolean(notActive),
   };
 
-  return sendToGithub(reqPath, "POST", token, body);
+  const webhookResult = await sendToGithub(reqPath, "POST", token, body);
+  if (!body.active) {
+    await updateOrganizationWebhook({
+      org,
+      token,
+      hookId: webhookResult.id,
+      body: {
+        active: false,
+      },
+    });
+    webhookResult.active = false;
+  }
+  return webhookResult;
 }
 
 async function setBranchProtectionRule(action, settings) {
