@@ -1,6 +1,6 @@
-const { CREATE_REPO_FAILED_MESSAGE, CREATE_ORG_WEBHOOK_FAILED_MESSAGE } = require("./consts");
+const { CREATE_REPO_NOT_FOUND_ERROR_MESSAGE, CREATE_ORG_WEBHOOK_NOT_FOUND_ERROR_MESSAGE } = require("./consts");
 const {
-  sendToGithub, listGithubRequest, getRepo, handleGithubNotFoundError,
+  sendToGithub, listGithubRequest, getRepo, parseAndHandleGithubError,
 } = require("./helpers");
 const parsers = require("./parsers");
 
@@ -47,7 +47,9 @@ async function createRepo(action, settings) {
     description: parsers.string(description),
   };
 
-  return sendToGithub(reqPath, "POST", token, body).catch(handleGithubNotFoundError(CREATE_REPO_FAILED_MESSAGE));
+  return sendToGithub(reqPath, "POST", token, body).catch(
+    parseAndHandleGithubError(CREATE_REPO_NOT_FOUND_ERROR_MESSAGE),
+  );
 }
 
 async function createRepoFromTemplate(action, settings) {
@@ -133,7 +135,7 @@ async function createOrganizationWebhook(action, settings) {
   };
 
   const webhookResult = await sendToGithub(reqPath, "POST", token, body).catch(
-    handleGithubNotFoundError(CREATE_ORG_WEBHOOK_FAILED_MESSAGE),
+    parseAndHandleGithubError(CREATE_ORG_WEBHOOK_NOT_FOUND_ERROR_MESSAGE),
   );
   if (!body.active) {
     await updateOrganizationWebhook({

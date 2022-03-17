@@ -70,7 +70,7 @@ function getRepo(params) {
   return repo;
 }
 
-function handleGithubNotFoundError(errorMessage) {
+function parseAndHandleGithubError(errorMessage) {
   return (error) => {
     throw error.message === "Not Found" ? new Error(errorMessage) : error;
   };
@@ -82,5 +82,5 @@ module.exports = {
   removeEmptyFieldsRecursive,
   stripAction,
   getRepo,
-  handleGithubNotFoundError,
+  parseAndHandleGithubError,
 };
