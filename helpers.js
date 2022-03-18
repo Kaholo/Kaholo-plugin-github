@@ -4,6 +4,7 @@ const parsers = require("./parsers");
 const githubApiUrl = "https://api.github.com";
 const DEFAULT_RESULTS_PER_PAGE = 100;
 const REQUEST_LIMIT_REACHED_ERROR_MESSAGE = "Plugin sent too many requests to the GitHub API. The result may be incomplete. Please wait one minute before executing the pipeline again.";
+const BIG_QUERY_REQUIRES_AUTH_TOKEN_ERROR_MESSAGE = "Authentication Token is required in order to fetch more than 100 items. Please provide it in the plugin's settings or action's parameters.";
 
 async function sendToGithub(url, httpMethod, token, body) {
   if (!token) {
@@ -96,6 +97,12 @@ function getRepo(params) {
   return repo;
 }
 
+function validateAuthenticationToken(params, settings) {
+  if (!params.token && !settings.token) {
+    throw new Error(BIG_QUERY_REQUIRES_AUTH_TOKEN_ERROR_MESSAGE);
+  }
+}
+
 function removeEmptyFields(obj) {
   const resultObj = obj;
   Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
@@ -121,4 +128,5 @@ module.exports = {
   stripAction,
   getRepo,
   createListCommitsSearchParams,
+  validateAuthenticationToken,
 };

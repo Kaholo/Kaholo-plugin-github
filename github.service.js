@@ -1,5 +1,6 @@
 const {
-  sendToGithub, listGithubRequest, getRepo, createListCommitsSearchParams,
+  sendToGithub, listGithubRequest, getRepo,
+  createListCommitsSearchParams, validateAuthenticationToken,
 } = require("./helpers");
 const parsers = require("./parsers");
 
@@ -210,6 +211,9 @@ async function postPRComment(params, settings) {
 async function searchRepos(params, settings) {
   const query = await createGithubSearchQuery(params, settings);
   const bigQuery = parsers.boolean(params.bigQuery);
+  if (bigQuery) {
+    validateAuthenticationToken(params, settings);
+  }
   const repos = await listGithubRequest(params, settings, "/search/repositories", {
     q: query,
   }, bigQuery);
@@ -218,12 +222,18 @@ async function searchRepos(params, settings) {
 
 async function listOrgs(params, settings) {
   const bigQuery = parsers.boolean(params.bigQuery);
+  if (bigQuery) {
+    validateAuthenticationToken(params, settings);
+  }
   return listGithubRequest(params, settings, "/user/orgs", {}, bigQuery);
 }
 
 async function listBranches(params, settings) {
   const repo = getRepo(params);
   const bigQuery = parsers.boolean(params.bigQuery);
+  if (bigQuery) {
+    validateAuthenticationToken(params, settings);
+  }
   return listGithubRequest(params, settings, `/repos/${repo}/branches`, {}, bigQuery);
 }
 
@@ -231,6 +241,9 @@ async function listCommits(params, settings) {
   const repo = getRepo(params);
   const searchParams = createListCommitsSearchParams(params);
   const bigQuery = parsers.boolean(params.bigQuery);
+  if (bigQuery) {
+    validateAuthenticationToken(params, settings);
+  }
   return listGithubRequest(params, settings, `/repos/${repo}/commits`, searchParams, bigQuery);
 }
 
