@@ -437,6 +437,13 @@
           "description": "The OAuth token of the user to authenticate with.",
           "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
           "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+        },
+        {
+          "name": "bigQuery",
+          "viewName": "Execute Big Query",
+          "description": "Check this if you want to fetch more than 100 organizations. It can slow down the execution of the pipeline.",
+          "type": "boolean",
+          "default": false
         }
       ]
     },
@@ -495,6 +502,13 @@
               "name": "Mirror"
             }
           ]
+        },
+        {
+          "name": "bigQuery",
+          "viewName": "Execute Big Query",
+          "description": "Check this if you want to fetch more than 100 repositories. It can slow down the execution of the pipeline.",
+          "type": "boolean",
+          "default": false
         }
       ]
     },
@@ -529,6 +543,13 @@
           "description": "The repository to list its branches.",
           "placeholder": "myrepo1",
           "learnUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/viewing-branches-in-your-repository"
+        },
+        {
+          "name": "bigQuery",
+          "viewName": "Execute Big Query",
+          "description": "Check this if you want to fetch more than 100 branches. It can slow down the execution of the pipeline.",
+          "type": "boolean",
+          "default": false
         }
       ]
     },
@@ -581,6 +602,13 @@
           "placeholder": "2021-02-17T13:23:21Z",
           "learnUrl": "https://docs.github.com/en/rest/reference/commits#list-commits",
           "type": "string"
+        },
+        {
+          "name": "bigQuery",
+          "viewName": "Execute Big Query",
+          "description": "Check this if you want to fetch more than 100 commits. It can slow down the execution of the pipeline.",
+          "type": "boolean",
+          "default": false
         }
       ]
     },

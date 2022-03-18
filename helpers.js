@@ -3,6 +3,7 @@ const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
 const DEFAULT_RESULTS_PER_PAGE = 100;
+const REQUEST_LIMIT_REACHED_ERROR_MESSAGE = "Plugin sent too many requests to the GitHub API. The result may be incomplete. Please wait one minute before executing the pipeline again.";
 
 async function sendToGithub(url, httpMethod, token, body) {
   if (!token) {
@@ -26,12 +27,15 @@ async function sendToGithub(url, httpMethod, token, body) {
   return jsonRes;
 }
 
-async function listGithubRequest(params, settings, path, searchParams) {
+async function listGithubRequest(params, settings, path, searchParams, bigQuery = false) {
+  const page = parsers.number(params.page) || 1;
+  const perPage = parsers.number(params.per_page) || DEFAULT_RESULTS_PER_PAGE;
   const resolvedSearchParams = removeEmptyFields({
     ...searchParams,
-    page: parsers.number(params.page),
-    per_page: parsers.number(params.per_page) || DEFAULT_RESULTS_PER_PAGE,
+    page,
+    per_page: perPage,
   });
+
   let resolvedPath = path;
   if (Object.keys(resolvedSearchParams).length > 0) {
     resolvedPath += "?";
@@ -41,7 +45,35 @@ async function listGithubRequest(params, settings, path, searchParams) {
       `${key}=${key === "q" ? value : encodeURIComponent(value)}`
     )).join("&");
   }
-  return sendToGithub(resolvedPath, "GET", params.token || settings.token);
+  let githubResults;
+  try {
+    githubResults = await sendToGithub(resolvedPath, "GET", params.token || settings.token);
+  } catch (error) {
+    if (error.message.startsWith("API rate limit exceeded")) {
+      console.error(new Error(REQUEST_LIMIT_REACHED_ERROR_MESSAGE));
+      return [];
+    }
+    throw error;
+  }
+  if (githubResults.items) {
+    githubResults = githubResults.items;
+  }
+  if (bigQuery && githubResults.length >= DEFAULT_RESULTS_PER_PAGE) {
+    const newParams = {
+      ...params,
+      page: page + 1,
+      per_page: perPage,
+    };
+    const recursiveResults = await listGithubRequest(
+      newParams,
+      settings,
+      path,
+      resolvedSearchParams,
+      true,
+    );
+    githubResults = githubResults.concat(recursiveResults);
+  }
+  return githubResults;
 }
 
 function createListCommitsSearchParams(params) {

@@ -171,10 +171,6 @@ async function setBranchProtectionRule(action, settings) {
   return sendToGithub(reqPath, "PUT", token, body);
 }
 
-async function listOrgs(params, settings) {
-  return listGithubRequest(params, settings, "/user/orgs");
-}
-
 async function getAuthenticatedUser(params, settings) {
   return sendToGithub("/user", "GET", params.token || settings.token);
 }
@@ -211,6 +207,38 @@ async function postPRComment(params, settings) {
   return sendToGithub(path, "POST", params.token || settings.token, { body: comment });
 }
 
+async function searchRepos(params, settings) {
+  const query = await createGithubSearchQuery(params, settings);
+  const bigQuery = parsers.boolean(params.bigQuery);
+  const repos = await listGithubRequest(params, settings, "/search/repositories", {
+    q: query,
+  }, bigQuery);
+  return repos;
+}
+
+async function listOrgs(params, settings) {
+  const bigQuery = parsers.boolean(params.bigQuery);
+  return listGithubRequest(params, settings, "/user/orgs", {}, bigQuery);
+}
+
+async function listBranches(params, settings) {
+  const repo = getRepo(params);
+  const bigQuery = parsers.boolean(params.bigQuery);
+  return listGithubRequest(params, settings, `/repos/${repo}/branches`, {}, bigQuery);
+}
+
+async function listCommits(params, settings) {
+  const repo = getRepo(params);
+  const searchParams = createListCommitsSearchParams(params);
+  const bigQuery = parsers.boolean(params.bigQuery);
+  return listGithubRequest(params, settings, `/repos/${repo}/commits`, searchParams, bigQuery);
+}
+
+async function listPullRequests(params, settings) {
+  const repo = getRepo(params);
+  return listGithubRequest(params, settings, `/repos/${repo}/pulls`);
+}
+
 async function createGithubSearchQuery(params, settings) {
   const querySegments = [];
   if (params.query) {
@@ -222,7 +250,7 @@ async function createGithubSearchQuery(params, settings) {
     owner = userLogin;
   }
   if (owner) {
-    querySegments.push(`user:${owner}`);
+    querySegments.push(`org:${owner}`);
   }
   const repoType = parsers.string(params.repoType);
   if (repoType) {
@@ -250,30 +278,6 @@ async function createGithubSearchQuery(params, settings) {
     }
   }
   return querySegments.join("+");
-}
-
-async function searchRepos(params, settings) {
-  const query = await createGithubSearchQuery(params, settings);
-  const repos = await listGithubRequest(params, settings, "/search/repositories", {
-    q: query,
-  });
-  return repos.items;
-}
-
-async function listBranches(params, settings) {
-  const repo = getRepo(params);
-  return listGithubRequest(params, settings, `/repos/${repo}/branches`);
-}
-
-async function listCommits(params, settings) {
-  const repo = getRepo(params);
-  const searchParams = createListCommitsSearchParams(params);
-  return listGithubRequest(params, settings, `/repos/${repo}/commits`, searchParams);
-}
-
-async function listPullRequests(params, settings) {
-  const repo = getRepo(params);
-  return listGithubRequest(params, settings, `/repos/${repo}/pulls`);
 }
 
 module.exports = {
