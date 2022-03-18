@@ -1,4 +1,6 @@
-const { sendToGithub, listGithubRequest, getRepo } = require("./helpers");
+const {
+  sendToGithub, listGithubRequest, getRepo, createListCommitsSearchParams,
+} = require("./helpers");
 const parsers = require("./parsers");
 
 async function sendStatus(action, settings) {
@@ -209,14 +211,6 @@ async function postPRComment(params, settings) {
   return sendToGithub(path, "POST", params.token || settings.token, { body: comment });
 }
 
-async function listRepos(params, settings) {
-  const owner = parsers.autocomplete(params.owner);
-  if (!owner || owner === "user") {
-    return listGithubRequest(params, settings, "/user/repos");
-  }
-  return listGithubRequest(params, settings, `/orgs/${owner}/repos`);
-}
-
 async function createGithubSearchQuery(params, settings) {
   const querySegments = [];
   if (params.query) {
@@ -235,10 +229,18 @@ async function createGithubSearchQuery(params, settings) {
 
 async function searchRepos(params, settings) {
   const query = await createGithubSearchQuery(params, settings);
-  const repos = await listGithubRequest(params, settings, "/search/repositories", query && {
+  const repos = await listGithubRequest(params, settings, "/search/repositories", {
     q: query,
   });
   return repos.items;
+}
+
+async function listRepos(params, settings) {
+  const owner = parsers.autocomplete(params.owner);
+  if (!owner || owner === "user") {
+    return searchRepos(params, settings);
+  }
+  return listGithubRequest(params, settings, `/orgs/${owner}/repos`);
 }
 
 async function listBranches(params, settings) {
@@ -248,8 +250,8 @@ async function listBranches(params, settings) {
 
 async function listCommits(params, settings) {
   const repo = getRepo(params);
-  const branch = parsers.autocomplete(params.branch);
-  return listGithubRequest(params, settings, `/repos/${repo}/commits`, { sha: branch });
+  const searchParams = createListCommitsSearchParams(params);
+  return listGithubRequest(params, settings, `/repos/${repo}/commits`, searchParams);
 }
 
 async function listPullRequests(params, settings) {

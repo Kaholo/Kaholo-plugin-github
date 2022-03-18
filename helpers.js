@@ -3,20 +3,6 @@ const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
 
-function removeEmptyFields(obj) {
-  const resultObj = obj;
-  Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
-  return resultObj;
-}
-
-function removeEmptyFieldsRecursive(obj) {
-  const resultObj = obj;
-  Object.keys(resultObj).forEach((key) => {
-    if (resultObj[key] === undefined) { delete resultObj[key]; } else if (typeof resultObj[key] === "object" && resultObj[key] !== null) { removeEmptyFieldsRecursive(resultObj[key]); }
-  });
-  return resultObj;
-}
-
 async function sendToGithub(url, httpMethod, token, body) {
   if (!token) {
     throw new Error("Must provide Authentication Token!");
@@ -50,13 +36,20 @@ async function listGithubRequest(params, settings, path, searchParams) {
     resolvedPath += "?";
     // if param is the query do not encode the value,
     // otherwise the github does not parse it correctly
-    resolvedPath += Object.entries(resolvedSearchParams).map(([key, value]) => `${key}=${key === "q" ? value : encodeURIComponent(value)}`).join("&");
+    resolvedPath += Object.entries(resolvedSearchParams).map(([key, value]) => (
+      `${key}=${key === "q" ? value : encodeURIComponent(value)}`
+    )).join("&");
   }
   return sendToGithub(resolvedPath, "GET", params.token || settings.token);
 }
 
-function stripAction(func) {
-  return async (action, settings) => func(action.params, settings);
+function createListCommitsSearchParams(params) {
+  const branch = parsers.autocomplete(params.branch);
+  const since = parsers.string(params.since);
+  return {
+    sha: branch,
+    ...(since ? { since } : {}),
+  };
 }
 
 function getRepo(params) {
@@ -70,10 +63,29 @@ function getRepo(params) {
   return repo;
 }
 
+function removeEmptyFields(obj) {
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
+  return resultObj;
+}
+
+function removeEmptyFieldsRecursive(obj) {
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => {
+    if (resultObj[key] === undefined) { delete resultObj[key]; } else if (typeof resultObj[key] === "object" && resultObj[key] !== null) { removeEmptyFieldsRecursive(resultObj[key]); }
+  });
+  return resultObj;
+}
+
+function stripAction(func) {
+  return async (action, settings) => func(action.params, settings);
+}
+
 module.exports = {
   sendToGithub,
   listGithubRequest,
   removeEmptyFieldsRecursive,
   stripAction,
   getRepo,
+  createListCommitsSearchParams,
 };
