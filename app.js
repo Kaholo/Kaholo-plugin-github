@@ -16,7 +16,7 @@ module.exports = {
   getRepository: stripAction(githubService.getRepository),
   getPullRequest: stripAction(githubService.getPullRequest),
   listOrgs: stripAction(githubService.listOrgs),
-  listRepos: stripAction(githubService.listRepos),
+  listRepos: stripAction(githubService.searchRepos),
   listBranches: stripAction(githubService.listBranches),
   listCommits: stripAction(githubService.listCommits),
   listPullRequests: stripAction(githubService.listPullRequests),

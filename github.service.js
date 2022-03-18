@@ -224,6 +224,31 @@ async function createGithubSearchQuery(params, settings) {
   if (owner) {
     querySegments.push(`user:${owner}`);
   }
+  const repoType = parsers.string(params.repoType);
+  if (repoType) {
+    switch (repoType) {
+      case "all":
+        querySegments.push("fork:true");
+        break;
+      case "forks":
+        querySegments.push("forks:only");
+        break;
+      case "private":
+        querySegments.push("is:private");
+        break;
+      case "public":
+        querySegments.push("is:public");
+        break;
+      case "archived":
+        querySegments.push("archived:true");
+        break;
+      case "mirror":
+        querySegments.push("mirror:true");
+        break;
+      default:
+        break;
+    }
+  }
   return querySegments.join("+");
 }
 
