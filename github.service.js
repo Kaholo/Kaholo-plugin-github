@@ -260,14 +260,6 @@ async function searchRepos(params, settings) {
   return repos.items;
 }
 
-async function listRepos(params, settings) {
-  const owner = parsers.autocomplete(params.owner);
-  if (!owner || owner === "user") {
-    return searchRepos(params, settings);
-  }
-  return listGithubRequest(params, settings, `/orgs/${owner}/repos`);
-}
-
 async function listBranches(params, settings) {
   const repo = getRepo(params);
   return listGithubRequest(params, settings, `/repos/${repo}/branches`);
@@ -297,7 +289,6 @@ module.exports = {
   getRepository,
   getPullRequest,
   listOrgs,
-  listRepos,
   listBranches,
   listCommits,
   listPullRequests,

@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
+const DEFAULT_RESULTS_PER_PAGE = 100;
 
 async function sendToGithub(url, httpMethod, token, body) {
   if (!token) {
@@ -29,7 +30,7 @@ async function listGithubRequest(params, settings, path, searchParams) {
   const resolvedSearchParams = removeEmptyFields({
     ...searchParams,
     page: parsers.number(params.page),
-    per_page: parsers.number(params.per_page),
+    per_page: parsers.number(params.per_page) || DEFAULT_RESULTS_PER_PAGE,
   });
   let resolvedPath = path;
   if (Object.keys(resolvedSearchParams).length > 0) {
