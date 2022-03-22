@@ -1,6 +1,6 @@
 const { CREATE_REPO_NOT_FOUND_ERROR_MESSAGE, CREATE_ORG_WEBHOOK_NOT_FOUND_ERROR_MESSAGE } = require("./consts");
 const {
-  sendToGithub, listGithubRequest, getRepo,
+  sendToGithub, listGithubRequest, getRepo, parseAndHandleGithubError,
   createListCommitsSearchParams, validateAuthenticationToken,
 } = require("./helpers");
 const parsers = require("./parsers");
