@@ -59,7 +59,7 @@ async function listGithubRequest(params, settings, path, searchParams, bigQuery 
   if (githubResults.items) {
     githubResults = githubResults.items;
   }
-  if (bigQuery && githubResults.length >= DEFAULT_RESULTS_PER_PAGE) {
+  if (bigQuery && githubResults.length >= perPage) {
     const newParams = {
       ...params,
       page: page + 1,
