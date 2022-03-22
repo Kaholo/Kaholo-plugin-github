@@ -70,10 +70,17 @@ function getRepo(params) {
   return repo;
 }
 
+function parseAndHandleGithubError(errorMessage) {
+  return (error) => {
+    throw error.message === "Not Found" ? new Error(errorMessage) : error;
+  };
+}
+
 module.exports = {
   sendToGithub,
   listGithubRequest,
   removeEmptyFieldsRecursive,
   stripAction,
   getRepo,
+  parseAndHandleGithubError,
 };
