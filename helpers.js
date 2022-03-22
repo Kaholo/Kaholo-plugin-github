@@ -121,6 +121,12 @@ function stripAction(func) {
   return async (action, settings) => func(action.params, settings);
 }
 
+function parseAndHandleGithubError(errorMessage) {
+  return (error) => {
+    throw error.message === "Not Found" ? new Error(errorMessage) : error;
+  };
+}
+
 module.exports = {
   sendToGithub,
   listGithubRequest,
@@ -129,4 +135,5 @@ module.exports = {
   getRepo,
   createListCommitsSearchParams,
   validateAuthenticationToken,
+  parseAndHandleGithubError,
 };
