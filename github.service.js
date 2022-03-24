@@ -277,7 +277,7 @@ async function createGithubSearchQuery(params, settings) {
         querySegments.push("fork:true");
         break;
       case "forks":
-        querySegments.push("forks:only");
+        querySegments.push("fork:only");
         break;
       case "private":
         querySegments.push("is:private");
