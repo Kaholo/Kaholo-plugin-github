@@ -51,8 +51,7 @@ async function listGithubRequest(params, settings, path, searchParams, bigQuery 
     githubResults = await sendToGithub(resolvedPath, "GET", params.token || settings.token);
   } catch (error) {
     if (error.message.startsWith("API rate limit exceeded")) {
-      console.error(new Error(REQUEST_LIMIT_REACHED_ERROR_MESSAGE));
-      return [];
+      throw new Error(REQUEST_LIMIT_REACHED_ERROR_MESSAGE);
     }
     throw error;
   }
