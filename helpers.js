@@ -2,20 +2,9 @@ const fetch = require("node-fetch");
 const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
-
-function removeEmptyFields(obj) {
-  const resultObj = obj;
-  Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
-  return resultObj;
-}
-
-function removeEmptyFieldsRecursive(obj) {
-  const resultObj = obj;
-  Object.keys(resultObj).forEach((key) => {
-    if (resultObj[key] === undefined) { delete resultObj[key]; } else if (typeof resultObj[key] === "object" && resultObj[key] !== null) { removeEmptyFieldsRecursive(resultObj[key]); }
-  });
-  return resultObj;
-}
+const DEFAULT_RESULTS_PER_PAGE = 100;
+const REQUEST_LIMIT_REACHED_ERROR_MESSAGE = "Plugin sent too many requests to the GitHub API. The result may be incomplete. Please wait one minute before executing the pipeline again.";
+const BIG_QUERY_REQUIRES_AUTH_TOKEN_ERROR_MESSAGE = "Authentication Token is required in order to fetch more than 100 items. Please provide it in the plugin's settings or action's parameters.";
 
 async function sendToGithub(url, httpMethod, token, body) {
   if (!token) {
@@ -39,24 +28,61 @@ async function sendToGithub(url, httpMethod, token, body) {
   return jsonRes;
 }
 
-async function listGithubRequest(params, settings, path, searchParams) {
+async function listGithubRequest(params, settings, path, searchParams, bigQuery = false) {
+  const page = parsers.number(params.page) || 1;
+  const perPage = parsers.number(params.per_page) || DEFAULT_RESULTS_PER_PAGE;
   const resolvedSearchParams = removeEmptyFields({
     ...searchParams,
-    page: parsers.number(params.page),
-    per_page: parsers.number(params.per_page),
+    page,
+    per_page: perPage,
   });
+
   let resolvedPath = path;
   if (Object.keys(resolvedSearchParams).length > 0) {
     resolvedPath += "?";
     // if param is the query do not encode the value,
     // otherwise the github does not parse it correctly
-    resolvedPath += Object.entries(resolvedSearchParams).map(([key, value]) => `${key}=${key === "q" ? value : encodeURIComponent(value)}`).join("&");
+    resolvedPath += Object.entries(resolvedSearchParams).map(([key, value]) => (
+      `${key}=${key === "q" ? value : encodeURIComponent(value)}`
+    )).join("&");
   }
-  return sendToGithub(resolvedPath, "GET", params.token || settings.token);
+  let githubResults;
+  try {
+    githubResults = await sendToGithub(resolvedPath, "GET", params.token || settings.token);
+  } catch (error) {
+    if (error.message.startsWith("API rate limit exceeded")) {
+      throw new Error(REQUEST_LIMIT_REACHED_ERROR_MESSAGE);
+    }
+    throw error;
+  }
+  if (githubResults.items) {
+    githubResults = githubResults.items;
+  }
+  if (bigQuery && githubResults.length >= perPage) {
+    const newParams = {
+      ...params,
+      page: page + 1,
+      per_page: perPage,
+    };
+    const recursiveResults = await listGithubRequest(
+      newParams,
+      settings,
+      path,
+      resolvedSearchParams,
+      true,
+    );
+    githubResults = githubResults.concat(recursiveResults);
+  }
+  return githubResults;
 }
 
-function stripAction(func) {
-  return async (action, settings) => func(action.params, settings);
+function createListCommitsSearchParams(params) {
+  const branch = parsers.autocomplete(params.branch);
+  const since = parsers.string(params.since);
+  return {
+    sha: branch,
+    ...(since ? { since } : {}),
+  };
 }
 
 function getRepo(params) {
@@ -68,6 +94,30 @@ function getRepo(params) {
     throw new Error("Bad repository name format.\nRepository Name should be in the format of {owner}/{repo}");
   }
   return repo;
+}
+
+function validateAuthenticationToken(params, settings) {
+  if (!params.token && !settings.token) {
+    throw new Error(BIG_QUERY_REQUIRES_AUTH_TOKEN_ERROR_MESSAGE);
+  }
+}
+
+function removeEmptyFields(obj) {
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
+  return resultObj;
+}
+
+function removeEmptyFieldsRecursive(obj) {
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => {
+    if (resultObj[key] === undefined) { delete resultObj[key]; } else if (typeof resultObj[key] === "object" && resultObj[key] !== null) { removeEmptyFieldsRecursive(resultObj[key]); }
+  });
+  return resultObj;
+}
+
+function stripAction(func) {
+  return async (action, settings) => func(action.params, settings);
 }
 
 function parseAndHandleGithubError(errorMessage) {
@@ -82,5 +132,7 @@ module.exports = {
   removeEmptyFieldsRecursive,
   stripAction,
   getRepo,
+  createListCommitsSearchParams,
+  validateAuthenticationToken,
   parseAndHandleGithubError,
 };
