@@ -1,76 +1,138 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 const parsers = require("./parsers");
 
 const githubApiUrl = "https://api.github.com";
+const DEFAULT_RESULTS_PER_PAGE = 100;
+const REQUEST_LIMIT_REACHED_ERROR_MESSAGE = "Plugin sent too many requests to the GitHub API. The result may be incomplete. Please wait one minute before executing the pipeline again.";
+const BIG_QUERY_REQUIRES_AUTH_TOKEN_ERROR_MESSAGE = "Authentication Token is required in order to fetch more than 100 items. Please provide it in the plugin's settings or action's parameters.";
 
 async function sendToGithub(url, httpMethod, token, body) {
-    if (!token) {
-        throw "Must provide Authentication Token!";
+  if (!token) {
+    throw new Error("Must provide Authentication Token!");
+  }
+  const accept = `application/vnd.github.${url.endsWith("generate") ? "baptiste-preview" : "v3"}+json`;
+  const reqParams = {
+    method: httpMethod,
+    headers: {
+      Accept: accept,
+      Authorization: `token ${token}`,
+    },
+  };
+  if (body) {
+    reqParams.body = JSON.stringify(removeEmptyFieldsRecursive(body));
+    reqParams.headers["Content-Type"] = "application/json";
+  }
+  const res = await fetch(githubApiUrl + url, reqParams);
+  const jsonRes = await res.json();
+  if (!res.ok || jsonRes.message === "Not Found") { throw jsonRes; }
+  return jsonRes;
+}
+
+async function listGithubRequest(params, settings, path, searchParams, bigQuery = false) {
+  const page = parsers.number(params.page) || 1;
+  const perPage = parsers.number(params.per_page) || DEFAULT_RESULTS_PER_PAGE;
+  const resolvedSearchParams = removeEmptyFields({
+    ...searchParams,
+    page,
+    per_page: perPage,
+  });
+
+  let resolvedPath = path;
+  if (Object.keys(resolvedSearchParams).length > 0) {
+    resolvedPath += "?";
+    // if param is the query do not encode the value,
+    // otherwise the github does not parse it correctly
+    resolvedPath += Object.entries(resolvedSearchParams).map(([key, value]) => (
+      `${key}=${key === "q" ? value : encodeURIComponent(value)}`
+    )).join("&");
+  }
+  let githubResults;
+  try {
+    githubResults = await sendToGithub(resolvedPath, "GET", params.token || settings.token);
+  } catch (error) {
+    if (error.message.startsWith("API rate limit exceeded")) {
+      throw new Error(REQUEST_LIMIT_REACHED_ERROR_MESSAGE);
     }
-    const accept = `application/vnd.github.${url.endsWith("generate") ? "baptiste-preview" : "v3"}+json`;
-    const reqParams = {
-        method: httpMethod,
-        headers: {  
-            'Accept': accept,
-            'Authorization': "token " + token
-        }
-    }
-    if (body) {
-        reqParams.body = JSON.stringify(removeEmptyFieldsRecursive(body));
-        reqParams.headers['Content-Type'] = 'application/json';
-    }
-    const res = await fetch(githubApiUrl + url, reqParams);
-    const jsonRes = await res.json();
-    if (!res.ok || jsonRes.message === "Not Found") { throw jsonRes };
-    return jsonRes;
+    throw error;
+  }
+  if (githubResults.items) {
+    githubResults = githubResults.items;
+  }
+  if (bigQuery && githubResults.length >= perPage) {
+    const newParams = {
+      ...params,
+      page: page + 1,
+      per_page: perPage,
+    };
+    const recursiveResults = await listGithubRequest(
+      newParams,
+      settings,
+      path,
+      resolvedSearchParams,
+      true,
+    );
+    githubResults = githubResults.concat(recursiveResults);
+  }
+  return githubResults;
+}
+
+function createListCommitsSearchParams(params) {
+  const branch = parsers.autocomplete(params.branch);
+  const since = parsers.string(params.since);
+  return {
+    sha: branch,
+    ...(since ? { since } : {}),
+  };
+}
+
+function getRepo(params) {
+  const repo = parsers.autocomplete(params.repo);
+  if (!repo) {
+    throw new Error("Must provide a repository");
+  }
+  if (!repo.includes("/")) {
+    throw new Error("Bad repository name format.\nRepository Name should be in the format of {owner}/{repo}");
+  }
+  return repo;
+}
+
+function validateAuthenticationToken(params, settings) {
+  if (!params.token && !settings.token) {
+    throw new Error(BIG_QUERY_REQUIRES_AUTH_TOKEN_ERROR_MESSAGE);
+  }
 }
 
 function removeEmptyFields(obj) {
-    Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
-    return obj;
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => resultObj[key] === undefined && delete resultObj[key]);
+  return resultObj;
 }
-
 
 function removeEmptyFieldsRecursive(obj) {
-    Object.keys(obj).forEach(key => {
-        if (obj[key] === undefined) delete obj[key];
-        else if (typeof obj[key] === "object" && obj[key]!==null) removeEmptyFieldsRecursive(obj[key]);
-    });
-    return obj;
+  const resultObj = obj;
+  Object.keys(resultObj).forEach((key) => {
+    if (resultObj[key] === undefined) { delete resultObj[key]; } else if (typeof resultObj[key] === "object" && resultObj[key] !== null) { removeEmptyFieldsRecursive(resultObj[key]); }
+  });
+  return resultObj;
 }
 
-async function listGithubRequest(params, settings, path, searchParams){
-    searchParams = removeEmptyFields({
-        ...searchParams, 
-        page: parsers.number(params.page), 
-        per_page: parsers.number(params.per_page)
-    });
-    if (Object.keys(searchParams).length > 0) {
-        path += "?" + new URLSearchParams(searchParams);
-    }
-    return sendToGithub(path, "GET", params.token || settings.token)
+function stripAction(func) {
+  return async (action, settings) => func(action.params, settings);
 }
 
-function stripAction(func){
-    return async (action, settings) => {
-        return func(action.params, settings);
-    };
-}
-
-function getRepo(params){
-    const repo = parsers.autocomplete(params.repo);
-    if (!repo) throw "Must provide a repository";
-    if (!repo.includes("/")){
-        throw(`Bad repository name format.
-Repository Name should be in the format of {owner}/{repo}`);
-    }
-    return repo;
+function parseAndHandleGithubError(errorMessage) {
+  return (error) => {
+    throw error.message === "Not Found" ? new Error(errorMessage) : error;
+  };
 }
 
 module.exports = {
-    sendToGithub,
-    listGithubRequest,
-    removeEmptyFieldsRecursive,
-    stripAction,
-    getRepo
+  sendToGithub,
+  listGithubRequest,
+  removeEmptyFieldsRecursive,
+  stripAction,
+  getRepo,
+  createListCommitsSearchParams,
+  validateAuthenticationToken,
+  parseAndHandleGithubError,
 };
