@@ -5,9 +5,19 @@
   "main": "app.js",
   "exposeRoute": true,
   "imgUrl": "logo.png",
-  "version": "1.5.0",
-  "keywords": ["github api", "git", "repository", "commit", "pull request", "webhook", "branch"],
-  "description": "Integration with Github API",
+  "version": "1.5.1",
+  "keywords": [
+    "github api",
+    "git",
+    "repository",
+    "commit",
+    "pull request",
+    "webhook",
+    "branch",
+    "status"
+  ],
+  "category": "Source Control",
+  "description": "Github Internet Hosting for Version Control Using Git",
   "settings": [
     {
       "name": "token",
@@ -829,6 +839,5 @@
         }
       ]
     }
-  ],
-  "category": "SOURCE CONTROL"
+  ]
 }
