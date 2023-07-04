@@ -1,5 +1,6 @@
 {
   "name": "Github",
+  "viewName": "GitHub",
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
@@ -17,30 +18,25 @@
     "status"
   ],
   "category": "Source Control",
-  "description": "Github Internet Hosting for Version Control Using Git",
-  "settings": [
-    {
-      "name": "token",
-      "viewName": "Authentication Token",
-      "type": "vault",
-      "description": "The OAuth token of the default user to authenticate with.",
-      "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-      "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-    }
-  ],
+  "description": "Cloud-based version control platform using Git",
+  "auth": {
+    "authId": "githubToken",
+    "params": [
+      {
+        "name": "token",
+        "viewName": "Authentication Token",
+        "type": "vault",
+        "description": "a GitHub token for authentication with the GitHub API",
+        "placeholder": "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",
+        "learnUrl": "https://cloud.google.com/docs/authentication/production"
+      }
+    ]
+  },
   "methods": [
     {
       "name": "sendStatus",
       "viewName": "Create Commit Status",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -138,14 +134,6 @@
       "viewName": "Create New Repository",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "name",
           "viewName": "Repository Name",
           "type": "string",
@@ -200,14 +188,6 @@
       "viewName": "Create Repository From Template",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "templateRepo",
           "viewName": "Template Repository Full Name",
           "type": "string",
@@ -254,14 +234,6 @@
       "name": "createRepoWebhook",
       "viewName": "Create Repository Webhook",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -344,14 +316,6 @@
       "name": "createOrganizationWebhook",
       "viewName": "Create Organization Webhook",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "org",
           "viewName": "Organization",
@@ -441,14 +405,6 @@
       "viewName": "List Connected Organizations",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "bigQuery",
           "viewName": "Execute Big Query",
           "description": "Check this if you want to fetch more than 100 organizations. It can slow down the execution of the pipeline.",
@@ -461,14 +417,6 @@
       "name": "listRepos",
       "viewName": "List Available Repositories",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -527,14 +475,6 @@
       "viewName": "List Branches",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
@@ -567,14 +507,6 @@
       "name": "listCommits",
       "viewName": "List Commits",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -625,29 +557,12 @@
     {
       "name": "getAuthenticatedUser",
       "viewName": "Get Authenticated User",
-      "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        }
-      ]
+      "params": []
     },
     {
       "name": "getRepository",
       "viewName": "Get Repository Info",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -674,14 +589,6 @@
       "name": "getPullRequest",
       "viewName": "Get Pull Request",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -718,14 +625,6 @@
       "name": "postPRComment",
       "viewName": "Post Comment On Pull Request",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
@@ -770,14 +669,6 @@
       "name": "setBranchProtectionRule",
       "viewName": "Set Branch Protection Rule",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
