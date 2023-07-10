@@ -15,7 +15,10 @@
     "pull request",
     "webhook",
     "branch",
-    "status"
+    "status",
+    "source",
+    "version",
+    "control"
   ],
   "category": "Source Control",
   "description": "Cloud-based version control platform using Git",
