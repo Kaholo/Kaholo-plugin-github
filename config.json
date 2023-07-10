@@ -342,7 +342,7 @@
         },
         {
           "name": "events",
-          "viewName": "Subcribed Events",
+          "viewName": "Subscribed Events",
           "type": "text",
           "required": true,
           "description": "List of events that will activate the webhook, one per line",
