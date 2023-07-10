@@ -1,5 +1,6 @@
 {
   "name": "Github",
+  "viewName": "GitHub",
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
@@ -14,40 +15,39 @@
     "pull request",
     "webhook",
     "branch",
-    "status"
+    "status",
+    "source",
+    "version",
+    "control"
   ],
   "category": "Source Control",
-  "description": "Github Internet Hosting for Version Control Using Git",
-  "settings": [
-    {
-      "name": "token",
-      "viewName": "Authentication Token",
-      "type": "vault",
-      "description": "The OAuth token of the default user to authenticate with.",
-      "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-      "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-    }
-  ],
+  "description": "Cloud-based version control platform using Git",
+  "auth": {
+    "authId": "githubToken",
+    "params": [
+      {
+        "name": "token",
+        "viewName": "Authentication Token",
+        "type": "vault",
+        "description": "a GitHub token for authentication with the GitHub API",
+        "placeholder": "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",
+        "learnUrl": "https://cloud.google.com/docs/authentication/production"
+      }
+    ]
+  },
   "methods": [
     {
       "name": "sendStatus",
       "viewName": "Create Commit Status",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "Username or Organization with access owner rights to the repository.",
+          "description": "User or organization owning the repository where commit was made",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/authentication"
         },
@@ -55,9 +55,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "Repository name to check the commit status.",
+          "description": "Repository where commit was made",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/repositories"
         },
@@ -65,9 +66,10 @@
           "name": "branch",
           "viewName": "Branch",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listBranchesAuto",
-          "description": "The branch of the commit to send a status check about.",
+          "description": "Branch of repository where commit was made",
           "placeholder": "branchname",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches"
         },
@@ -75,9 +77,10 @@
           "name": "sha",
           "viewName": "Commit",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listCommitsAuto",
-          "description": "The commit to send a status check about.",
+          "description": "Commit for which status will be created",
           "placeholder": "Commit Title",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks"
         },
@@ -103,32 +106,32 @@
               "name": "Success"
             }
           ],
-          "description": "The state of the status check.",
+          "description": "Status to assign to the commit",
           "placeholder": "Error | Failure | Pending | Success",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks"
         },
         {
           "name": "linkedUrl",
-          "viewName": "Linked Target URL",
+          "viewName": "Details URL",
           "type": "string",
-          "description": "A URL link to a report of the status check in case there is one.",
-          "placeholder": "www.commit-status.com",
+          "description": "Optional URL to link as \"Details\" for commit status",
+          "placeholder": "https://sonarcube/reports/codeanalysis-20519928.pdf",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks"
         },
         {
           "name": "description",
           "viewName": "Description",
           "type": "text",
-          "description": "A short description of the status check result.",
-          "placeholder": "this_is_the_summary_of_the_status_check",
+          "description": "Optional description, e.g. the reason the status was assigned",
+          "placeholder": "Code analysis failed - see Details for report",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks"
         },
         {
           "name": "context",
           "viewName": "Context",
           "type": "string",
-          "description": "A label to compare this status from the status of other systems. This field is case-insensitive. Default value is 'default'.",
-          "placeholder": "status_check_US_1",
+          "description": "Optional context label for combined statuses - default value is 'default'.",
+          "placeholder": "code_analysis",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks"
         }
       ]
@@ -138,18 +141,11 @@
       "viewName": "Create New Repository",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "name",
           "viewName": "Repository Name",
           "type": "string",
-          "description": "The name of the repository to create.",
+          "required": true,
+          "description": "Name for repository to be created",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/get-started/quickstart/create-a-repo"
         },
@@ -157,17 +153,18 @@
           "name": "description",
           "viewName": "Description",
           "type": "text",
-          "description": "A short description of the new repository.",
-          "placeholder": "this_is_the_description_of_the_repo",
+          "description": "A short description of the new repository",
+          "placeholder": "a new repo for myproject",
           "learnUrl": "https://docs.github.com/en/get-started/quickstart/create-a-repo"
         },
         {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "Username or Organization with access owner rights to the repository.",
+          "description": "User or organization that will have owner rights to the repository",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/authentication"
         },
@@ -175,22 +172,22 @@
           "name": "private",
           "viewName": "Private",
           "type": "boolean",
-          "description": "Specifying if the repository will be private.",
+          "description": "Make the repository a private one.",
           "learnUrl": "https://docs.github.com/en/get-started/quickstart/create-a-repo"
         },
         {
           "name": "autoInit",
           "viewName": "Auto Init",
           "type": "boolean",
-          "description": "Create an initial commit with empty README.",
+          "description": "Create an initial commit with an empty README.",
           "learnUrl": "https://docs.github.com/en/get-started/quickstart/create-a-repo"
         },
         {
           "name": "gitignoreTemplate",
           "viewName": "GitIgnore Template",
           "type": "string",
-          "description": "Include .gitignore of desired language or platform template.",
-          "placeholder": "Haskell",
+          "description": "Include .gitignore of specified language or platform template.",
+          "placeholder": "Java",
           "learnUrl": "https://docs.github.com/en/rest/reference/gitignore"
         }
       ]
@@ -200,18 +197,11 @@
       "viewName": "Create Repository From Template",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "templateRepo",
-          "viewName": "Template Repository Full Name",
+          "viewName": "Template Repository Name",
           "type": "string",
-          "description": "The name of the template repository to create the repository from.",
+          "required": true,
+          "description": "Name of a template repository to use",
           "placeholder": "myuser/myrepotemplate",
           "learnUrl": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template"
         },
@@ -219,7 +209,8 @@
           "name": "name",
           "viewName": "New Repository Name",
           "type": "string",
-          "description": "The name of the new repository to create.",
+          "required": true,
+          "description": "Name of the repository to be created",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template"
         },
@@ -227,7 +218,7 @@
           "name": "description",
           "viewName": "Description",
           "type": "text",
-          "description": "Description of the new repository.",
+          "description": "Description of the new repository",
           "placeholder": "This is a dev repository",
           "learnUrl": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template"
         },
@@ -235,9 +226,10 @@
           "name": "owner",
           "viewName": "New Repository Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "Owner of the new repository. Can be a user or an organization.",
+          "description": "User or organization that will have owner rights to the repository",
           "placeholder": "owner_name",
           "learnUrl": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template"
         },
@@ -245,7 +237,7 @@
           "name": "private",
           "viewName": "Private",
           "type": "boolean",
-          "description": "Specifying if the repository will be private.",
+          "description": "Make the repository a private one.",
           "learnUrl": "https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template"
         }
       ]
@@ -255,20 +247,13 @@
       "viewName": "Create Repository Webhook",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repository to create the Webhook for.",
+          "description": "User or organization that owns the repository where webhook is to be created",
           "placeholder": "myuser",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -276,9 +261,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository to create the Webhook for.",
+          "description": "Repository where webhook will be created",
           "placeholder": "myrepo1",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -286,7 +272,8 @@
           "name": "events",
           "viewName": "Subscribed Events",
           "type": "text",
-          "description": "Subscribe the webhook to the described sevices.",
+          "required": true,
+          "description": "List of events that will activate the webhook, one per line",
           "placeholder": "push\npull_request",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads"
         },
@@ -294,7 +281,8 @@
           "name": "url",
           "viewName": "Webhook URL",
           "type": "string",
-          "description": "Send event payloads to this URL",
+          "required": true,
+          "description": "URL to which the webhook will send its payload",
           "placeholder": "http://example.kaholo.io/webhook/github/push",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -305,37 +293,37 @@
           "options": [
             {
               "id": "json",
-              "name": "Json"
+              "name": "JSON"
             },
             {
               "id": "form",
-              "name": "Form"
+              "name": "x-www-form-urlencoded"
             }
           ],
-          "description": "Send the payload in JSON/Form format.",
-          "placeholder": "Json",
+          "description": "Select payload content type",
+          "default": "json",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "secret",
           "viewName": "Secret",
           "type": "vault",
-          "description": "Attach this secret to requests sent to the webhook, for validation.",
+          "description": "Secret for validation of the webhook",
           "placeholder": "exampleValue123",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "insecureSsl",
-          "viewName": "Don't Verify SSL",
+          "viewName": "Disable SSL Verification",
           "type": "boolean",
-          "description": "Don't verify the SSL certificate of the webhook.",
+          "description": "Skip verification of Webhook URL's SSL certificate.",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "notActive",
-          "viewName": "Not Active",
+          "viewName": "Leave Webhook Inactive",
           "type": "boolean",
-          "description": "Don't alert anything until turned active manually.",
+          "description": "Configure webhook but leave delivery disabled.",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         }
       ]
@@ -345,28 +333,22 @@
       "viewName": "Create Organization Webhook",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "org",
           "viewName": "Organization",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOrgsAuto",
-          "description": "The organization to create the webhook for.",
+          "description": "Organization where the webhook will be created",
           "placeholder": "myOrganization",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "events",
-          "viewName": "Subcribed Events",
+          "viewName": "Subscribed Events",
           "type": "text",
-          "description": "Subscribe the webhook to the described sevices.",
+          "required": true,
+          "description": "List of events that will activate the webhook, one per line",
           "placeholder": "push\npull_request",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads"
         },
@@ -374,7 +356,8 @@
           "name": "url",
           "viewName": "Webhook URL",
           "type": "string",
-          "description": "Send event payloads to this URL.",
+          "required": true,
+          "description": "URL to which the webhook will send its payload",
           "placeholder": "http://example.kaholo.io/webhook/github/push",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -385,37 +368,37 @@
           "options": [
             {
               "id": "json",
-              "name": "Json"
+              "name": "JSON"
             },
             {
               "id": "form",
-              "name": "Form"
+              "name": "x-www-form-urlencoded"
             }
           ],
-          "description": "Send the payload in JSON/Form format.",
-          "placeholder": "Json",
+          "description": "Select payload content type",
+          "default": "json",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "secret",
           "viewName": "Secret",
           "type": "vault",
-          "description": "Attach this secret to requests sent to the webhook, for validation.",
-          "placeholder": "exampleValue123",
+          "description": "Secret for validation of the webhook",
+          "placeholder": "exampleSecret123",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "insecureSsl",
-          "viewName": "Don't Verify SSL",
+          "viewName": "Disable SSL Verification",
           "type": "boolean",
-          "description": "Don't verify the SSL certificate of the webhook.",
+          "description": "Skip verification of Webhook URL's SSL certificate.",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "username",
           "viewName": "Webhook Username",
           "type": "string",
-          "description": "If webhook requires authentication, use this username.",
+          "description": "Optional username for webhook authentication",
           "placeholder": "myuser",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
@@ -423,15 +406,15 @@
           "name": "password",
           "viewName": "Webhook Password",
           "type": "vault",
-          "description": "If webhook requires authentication, use this password.",
+          "description": "Optional password for webhook authentication",
           "placeholder": "myPass1234!",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         },
         {
           "name": "notActive",
-          "viewName": "Not Active",
+          "viewName": "Leave Webhook Inactive",
           "type": "boolean",
-          "description": "Don't alert anything until turned active manually.",
+          "description": "Configure webhook but leave delivery disabled.",
           "learnUrl": "https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks"
         }
       ]
@@ -441,17 +424,9 @@
       "viewName": "List Connected Organizations",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "bigQuery",
           "viewName": "Execute Big Query",
-          "description": "Check this if you want to fetch more than 100 organizations. It can slow down the execution of the pipeline.",
+          "description": "List more than the first 100 Organizations.",
           "type": "boolean",
           "default": false
         }
@@ -459,30 +434,23 @@
     },
     {
       "name": "listRepos",
-      "viewName": "List Available Repositories",
+      "viewName": "List Repositories",
       "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
         {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repository.",
+          "description": "User or organization owning the repositories to list",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/rest/reference/repos"
         },
         {
           "name": "repoType",
           "viewName": "Type",
-          "description": "Type of the repository.",
+          "description": "Type of the repositories to list",
           "learnUrl": "https://docs.github.com/en/rest/reference/repos#list-repositories-for-the-authenticated-user",
           "default": "all",
           "type": "options",
@@ -516,7 +484,7 @@
         {
           "name": "bigQuery",
           "viewName": "Execute Big Query",
-          "description": "Check this if you want to fetch more than 100 repositories. It can slow down the execution of the pipeline.",
+          "description": "List more than the first 100 repositories.",
           "type": "boolean",
           "default": false
         }
@@ -527,20 +495,13 @@
       "viewName": "List Branches",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repository.",
+          "description": "User or organization owning the repository for which branches will be listed",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/viewing-branches-in-your-repository"
         },
@@ -548,16 +509,17 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository to list its branches.",
+          "description": "Repository for which branches will be listed",
           "placeholder": "myrepo1",
           "learnUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/viewing-branches-in-your-repository"
         },
         {
           "name": "bigQuery",
           "viewName": "Execute Big Query",
-          "description": "Check this if you want to fetch more than 100 branches. It can slow down the execution of the pipeline.",
+          "description": "List more than the first 100 branches.",
           "type": "boolean",
           "default": false
         }
@@ -568,20 +530,13 @@
       "viewName": "List Commits",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repository.",
+          "description": "User or organization owning the repository for which commits will be listed",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/search-github/searching-on-github/searching-commits"
         },
@@ -589,9 +544,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository name.",
+          "description": "Repository for which commits will be listed",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/search-github/searching-on-github/searching-commits"
         },
@@ -599,24 +555,25 @@
           "name": "branch",
           "viewName": "Branch",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listBranchesAuto",
-          "description": "The branch of the commit to send a status check about.",
+          "description": "Branch for which commits will be listed",
           "placeholder": "branchname",
           "learnUrl": "https://docs.github.com/en/search-github/searching-on-github/searching-commits"
         },
         {
           "name": "since",
           "viewName": "Since",
-          "description": "Only the commits after this date will be showed. Provide date in format YYYY-MM-DDTHH:MM:SSZ.",
-          "placeholder": "2021-02-17T13:23:21Z",
+          "description": "List only commits made after this date (format YYYY-MM-DDTHH:MM:SSZ).",
+          "placeholder": "2023-02-17T13:23:21Z",
           "learnUrl": "https://docs.github.com/en/rest/reference/commits#list-commits",
           "type": "string"
         },
         {
           "name": "bigQuery",
           "viewName": "Execute Big Query",
-          "description": "Check this if you want to fetch more than 100 commits. It can slow down the execution of the pipeline.",
+          "description": "List more than the first 100 commits.",
           "type": "boolean",
           "default": false
         }
@@ -625,36 +582,20 @@
     {
       "name": "getAuthenticatedUser",
       "viewName": "Get Authenticated User",
-      "params": [
-        {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        }
-      ]
+      "params": []
     },
     {
       "name": "getRepository",
       "viewName": "Get Repository Info",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "Username or Organization with access owner rights to the repository.",
+          "description": "User or organization owning the repository",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/authentication"
         },
@@ -662,9 +603,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository to return information about.",
+          "description": "Repository about which to return information",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/repositories"
         }
@@ -675,20 +617,13 @@
       "viewName": "Get Pull Request",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repo of the pull request.",
+          "description": "User or organization owning the repository of the pull request",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/authentication"
         },
@@ -696,9 +631,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository of the pull request.",
+          "description": "Repository of the pull request",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/repositories"
         },
@@ -706,9 +642,10 @@
           "name": "pr",
           "viewName": "Pull Request",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listPRAuto",
-          "description": "The pull request to return information about.",
+          "description": "Pull request about which to get information",
           "placeholder": "Pull Request Title",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
         }
@@ -719,20 +656,13 @@
       "viewName": "Post Comment On Pull Request",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repo of the pull request.",
+          "description": "User or organization owning the repository of the pull request",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/authentication"
         },
@@ -740,9 +670,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository of the pull request.",
+          "description": "Repository of the pull request",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/repositories"
         },
@@ -750,9 +681,10 @@
           "name": "pr",
           "viewName": "Pull Request",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listPRAuto",
-          "description": "The pull request to post a comment on.",
+          "description": "Pull request where comment will be posted",
           "placeholder": "Pull Request Title",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests"
         },
@@ -760,8 +692,9 @@
           "name": "comment",
           "viewName": "Comment",
           "type": "text",
-          "description": "The comment to be submitted.",
-          "placeholder": "This is a comment",
+          "required": true,
+          "description": "Comment to be posted",
+          "placeholder": "Please merge this PR to v3.0 RC",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/commenting-on-a-pull-request"
         }
       ]
@@ -771,20 +704,13 @@
       "viewName": "Set Branch Protection Rule",
       "params": [
         {
-          "name": "token",
-          "viewName": "Authentication Token",
-          "type": "vault",
-          "description": "The OAuth token of the user to authenticate with.",
-          "placeholder": "gho_ZAxAKULY0R6T5fhgurkuAwLFtrL70K",
-          "learnUrl": "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-        },
-        {
           "name": "owner",
           "viewName": "Owner",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listOwnersAuto",
-          "description": "The owner of the repo of the pull request.",
+          "description": "User or organization owning the repository where protection rule will be set",
           "placeholder": "myusername",
           "learnUrl": "https://docs.github.com/en/authentication"
         },
@@ -792,9 +718,10 @@
           "name": "repo",
           "viewName": "Repository",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listReposAuto",
-          "description": "The repository of the pull request.",
+          "description": "Repository where protection rule will be set",
           "placeholder": "myrepo",
           "learnUrl": "https://docs.github.com/en/repositories"
         },
@@ -802,9 +729,10 @@
           "name": "branch",
           "viewName": "Branch",
           "type": "autocomplete",
+          "required": true,
           "autocompleteType": "function",
           "functionName": "listBranchesAuto",
-          "description": "The branch of the commit to send a status check about.",
+          "description": "Branch where protection rule will be set",
           "placeholder": "branchname",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches"
         },
@@ -812,29 +740,29 @@
           "name": "contexts",
           "viewName": "Required Checks",
           "type": "text",
-          "description": "The contexts which should be required. String array or one per line",
-          "placeholder": "@ci/required-check",
+          "description": "List of required checks, one per line",
+          "placeholder": "ci-build\ncode-analysis",
           "learnUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/commenting-on-a-pull-request"
         },
         {
           "name": "dismissStaleReviews",
           "viewName": "Dismiss Stale Reviews",
           "type": "boolean",
-          "description": "Set to 'true' if you want to automatically dismiss approving reviews when someone pushes a new commit.",
+          "description": "Enable to automatically dismiss approving reviews when there is a new commit.",
           "learnUrl": "https://docs.github.com/en/rest/reference/branches#update-branch-protection"
         },
         {
           "name": "requireOwnerReview",
           "viewName": "Require Owner Review",
           "type": "boolean",
-          "description": "Blocks merging pull requests until code owners have reviewed.",
+          "description": "Block merges without code owner review",
           "learnUrl": "https://docs.github.com/en/rest/reference/branches#update-branch-protection"
         },
         {
           "name": "approvingCount",
           "viewName": "Approving Count",
           "type": "string",
-          "description": "Specifies the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers.",
+          "description": "Number of reviewers required to approve a pull request (0-6)",
           "learnUrl": "https://docs.github.com/en/rest/reference/branches#update-branch-protection"
         }
       ]
